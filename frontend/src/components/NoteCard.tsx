@@ -10,14 +10,13 @@ import type { Note, NoteColor } from "@/types/notes.type";
 import { Pin, } from "lucide-react";
 import { useLocation } from "react-router-dom";
 
-import { useCreateBlockNote } from "@blocknote/react";
-import { useEffect } from "react";
 import { BlockNoteView } from "@blocknote/mantine";
 import "./TextEditor/editor.css";
 import { NoteType } from "@/types/enums";
 import { checkListToMarkdown } from "./TextEditor/utils";
 import { ColorSelect } from "./TextEditor/Toolbar";
 import NoteActions from "./NoteActions";
+import useEditor from "@/hooks/useEditor";
 
 const NoteCard = ({
   note,
@@ -26,9 +25,13 @@ const NoteCard = ({
   note: Note;
   setOpenedNoteId: (id: string) => void;
 }) => {
-  const { title, image, color } = note;
+  const { title, image, color, type, content } = note;
   const { pathname } = useLocation();
-  const editor = useCreateBlockNote();
+
+  const editor = useEditor({
+    type,
+    content
+  })
 
   const isTrashPage = pathname === PAGE_ROUTES.trash;
   const isNotesPage = pathname === PAGE_ROUTES.notes;
@@ -54,16 +57,6 @@ const NoteCard = ({
 
     unselectNote(note.id);
   };
-
-  useEffect(() => {
-    const loadContent = async () => {
-      const blocks = await editor.tryParseMarkdownToBlocks(note.content);
-
-      editor.replaceBlocks(editor.document, blocks);
-    };
-
-    loadContent();
-  }, [note.content, editor]);
 
   const handleContentChange = () => {
     if (note.type !== NoteType.LIST) {

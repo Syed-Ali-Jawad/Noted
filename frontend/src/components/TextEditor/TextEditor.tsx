@@ -1,4 +1,3 @@
-import { useCreateBlockNote } from "@blocknote/react";
 import { BlockNoteView } from "@blocknote/mantine";
 import "./editor.css";
 import "@blocknote/core/fonts/inter.css";
@@ -13,12 +12,10 @@ import type { Note } from "@/types/notes.type";
 import { useEffect, useState } from "react";
 import {
   checkListToMarkdown,
-  getInitialContent,
-  getSchema,
-  parseChecklist,
 } from "./utils";
 import useNotesStore from "@/store";
 import { useLocation } from "react-router-dom";
+import useEditor from "@/hooks/useEditor";
 
 const defaultValues: Note = {
   id: "",
@@ -59,25 +56,11 @@ const TextEditor = ({ noteId }: { noteId: string }) => {
 
   const { title, color, type, image, content } = watch();
 
-  const editor = useCreateBlockNote(
-    {
-      schema: getSchema(type),
-      placeholders: {
-        default: "Take a note...",
-      },
-      initialContent: getInitialContent(type),
-    },
-    [type],
-  );
-
-  useEffect(() => {
-    const blocks =
-      type === NoteType.LIST
-        ? parseChecklist(note.content)
-        : editor.tryParseMarkdownToBlocks(note.content);
-
-    editor.replaceBlocks(editor.document, blocks);
-  }, [editor]);
+  const editor = useEditor({
+    type,
+    content: note.content,
+    placeholder: "Take a note..."
+  })
 
   useEffect(() => {
     if (!image) {

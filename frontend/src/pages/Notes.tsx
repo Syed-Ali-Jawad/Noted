@@ -67,7 +67,7 @@ const Notes = () => {
           </div>
           <div
             className={cn(
-              "bg-primary shadow-[0_0_10px_2px_rgba(0,0,0,0.25)] sm:max-w-md max-w-[unset] text-white rounded-full transition-all duration-300 w-14 h-14 px-4 flex items-center justify-center fixed bottom-8 sm:right-8 right-4",
+              "bg-primary shadow-[0_0_10px_2px_rgba(0,0,0,0.25)] sm:max-w-md max-w-[unset] text-white rounded-full transition-all ease-in sm:duration-500 duration-300 w-14 h-14 px-4 flex items-center justify-center fixed bottom-8 sm:right-8 right-4",
               isNoteAddOpen && "w-[calc(100%-32px)] sm:w-full justify-between",
             )}
           >
