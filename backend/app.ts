@@ -5,7 +5,7 @@ import notFound from "./src/middlewares/notFound.js";
 import cors from "cors";
 import appRouter from "./src/routes/app.routes.js";
 
-export function createApp() {
+export default function createApp() {
   const app = express();
 
   app.use(cors());
