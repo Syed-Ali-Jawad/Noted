@@ -3,7 +3,7 @@ import { getInitialContent, getSchema, parseChecklist } from "@/components/TextE
 import { useCreateBlockNote } from "@blocknote/react";
 import { useEffect } from "react";
 
-const useEditor = ({ type, content, placeholder }: { type: NoteType, content: string, placeholder?: string }) => {
+const useEditor = ({ type, content, placeholder, isContentView = false }: { type: NoteType, content: string, placeholder?: string, isContentView?: boolean }) => {
     const editor = useCreateBlockNote(
         {
             schema: getSchema(type),
@@ -17,6 +17,8 @@ const useEditor = ({ type, content, placeholder }: { type: NoteType, content: st
         [type],
     );
 
+    const dependency = [editor, ...(isContentView ? [content] : [])]
+
     useEffect(() => {
         const blocks =
             type === NoteType.LIST
@@ -24,7 +26,7 @@ const useEditor = ({ type, content, placeholder }: { type: NoteType, content: st
                 : editor.tryParseMarkdownToBlocks(content);
 
         editor.replaceBlocks(editor.document, blocks);
-    }, [editor]);
+    }, dependency);
 
     return editor;
 }

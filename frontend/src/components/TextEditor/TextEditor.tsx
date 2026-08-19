@@ -121,6 +121,8 @@ const TextEditor = ({ noteId }: { noteId: string }) => {
   }, [title, color, content, image, type]);
 
   const handleContentChange = () => {
+    if (isSaving) return;
+    
     const markdown =
       type === NoteType.LIST
         ? checkListToMarkdown(editor.document)

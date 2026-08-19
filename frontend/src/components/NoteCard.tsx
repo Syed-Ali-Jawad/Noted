@@ -30,7 +30,8 @@ const NoteCard = ({
 
   const editor = useEditor({
     type,
-    content
+    content,
+    isContentView: true
   })
 
   const isTrashPage = pathname === PAGE_ROUTES.trash;
