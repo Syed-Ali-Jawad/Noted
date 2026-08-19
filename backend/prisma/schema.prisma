@@ -1,0 +1,64 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Color {
+  BLUE
+  GREEN
+  YELLOW
+  PURPLE
+  WHITE
+}
+
+enum NoteType {
+  TEXT
+  RICHTEXT
+  CHECKLIST
+}
+
+model User {
+  id String @id @db.Uuid @default(dbgenerated("gen_random_uuid()"))
+  profilePic String?
+  email String @unique
+  name String @db.Text
+  password String
+  notePrefferedColor Color? @default(WHITE)  
+  createdAt DateTime @default(now()) 
+  updatedAt DateTime @updatedAt
+  note Note[]
+
+  @@map("users")
+}
+
+
+model Note {
+  id String @id @db.Uuid @default(dbgenerated("gen_random_uuid()"))
+  userId String @db.Uuid 
+  title String @db.Text @default("")
+  content String @db.Text @default("")
+  color Color @default(WHITE)
+  type NoteType @default(TEXT)
+  isPinned Boolean @default(false)
+  isArchived Boolean @default(false)
+  isTrashed Boolean @default(false)
+  createdAt DateTime @default(now())
+  trashedAt DateTime? 
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("notes")
+}
+
+
+
+

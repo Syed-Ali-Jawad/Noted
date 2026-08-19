@@ -1,0 +1,3 @@
+# environment variable
+.env
+/src/generated/prisma

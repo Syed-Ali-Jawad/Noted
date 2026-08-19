@@ -1,0 +1,127 @@
+.note-editor {
+  height: 100%;
+}
+
+/* Main BlockNote container */
+.note-editor .bn-container {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.bn-container,
+.bn-editor {
+  background-color: transparent !important;
+}
+
+/* Editor/content area */
+.note-editor .bn-editor {
+  flex: 1;
+  min-height: 0;
+  width: 100%;
+}
+
+.note-view .bn-editor {
+  padding-inline: 0px;
+}
+
+.note-editor .bn-toolbar {
+  width: 100% !important;
+  max-width: unset !important;
+  overflow-x: visible !important;
+}
+
+.note-editor .bn-task-list-item-checkbox {
+  accent-color: #e05a2b !important;
+}
+
+.note-editor
+  .bn-block-content:has(.ProseMirror-trailingBreak:only-child):after {
+  color: var(--color-gray-400) !important;
+  font-weight: 300 !important;
+  font-style: normal;
+}
+
+.bn-block-content {
+  align-items: center !important;
+}
+
+.bn-block-content[data-content-type="checkListItem"] > div > input {
+  margin-top: 3px !important;
+}
+
+.bn-block-content[data-content-type="numberedListItem"]:before,
+.bn-block-content[data-content-type="bulletListItem"]:before {
+  align-items: center;
+}
+
+/* .note-editor
+  .bn-side-menu
+  .mantine-UnstyledButton-root:not(.mantine-Menu-item)
+  svg {
+  color: var(--color-slate-400) !important;
+}
+
+.bn-side-menu > div {
+  opacity: 0 !important;
+} */
+
+.bn-editor input[type="checkbox"] {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 18px !important;
+  height: 18px !important;
+  border: 2px solid var(--color-slate-400);
+  border-radius: 20%;
+  cursor: pointer;
+  background-color: #ffffff;
+  transition: all 150ms ease-in-out;
+  display: inline-grid;
+  place-content: center;
+  flex-shrink: 0;
+}
+
+.bn-editor input[type="checkbox"]:hover {
+  border-color: #475569; /* Solid slate border */
+}
+
+/* Checked State: Soft Background + Strong Solid Border & Tick */
+.bn-editor input[type="checkbox"]:checked {
+  background-color: #f1f5f9; /* Very soft light slate fill */
+  border-color: #475569; /* Solid slate border */
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23475569' stroke-width='3.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='20 6 9 17 4 12'%3E%3C/polyline%3E%3C/svg%3E");
+  background-size: 10px 10px;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.note-view .bn-editor {
+  pointer-events: none;
+}
+
+.note-view
+  .bn-block-content[data-content-type="checkListItem"]
+  input[type="checkbox"] {
+  pointer-events: auto;
+  cursor: pointer;
+}
+
+.note-editor .bn-editor h1 {
+  font-size: 24px !important;
+}
+
+.note-editor .bn-editor h2 {
+  font-size: 20px !important;
+}
+
+.note-editor .bn-editor h3 {
+  font-size: 18px !important;
+}
+
+.note-view .bn-editor h1{
+  font-size: 20px!important;
+}
+
+.note-view .bn-editor h2, h3{
+  font-size: 18px!important;
+}
