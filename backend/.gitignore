@@ -1,3 +1,6 @@
 # environment variable
 .env
+
 /src/generated/prisma
+node_modules/
+dist/
