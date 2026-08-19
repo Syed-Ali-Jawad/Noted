@@ -1,3 +1,4 @@
+import "./src/types/express.d.ts";
 import express from "express";
 import { errorHandler } from "./src/middlewares/errorHandler.js";
 import notFound from "./src/middlewares/notFound.js";

@@ -1,3 +1,4 @@
+import "../types/express.d.ts";
 import type { Request, Response } from "express"
 import { addANote, dbDeleteNoteById, dbDeleteNotes, dbGetNote, dbGetNoteByArchived, dbGetNoteById, dbGetPinnedNotes, dbGetTrashedNotes, dbUpdateNoteById, dbUpdateNotes } from "../services/notes.service.js"
 import type { NoteUpdate } from "../types/note.type.js"
