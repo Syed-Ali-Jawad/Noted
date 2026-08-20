@@ -13,7 +13,7 @@ const GradientPage = ({
   return (
     <div
       className={cn(
-        "relative bg-amber-100/20 min-h-screen max-w-screen flex justify-center items-center",
+        "relative bg-amber-100/20 min-h-dvh xs:min-h-screen max-w-screen flex justify-center items-center",
         className,
       )}
     >
