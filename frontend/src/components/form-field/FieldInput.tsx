@@ -10,7 +10,7 @@ const VariantStyleMap = {
 const FieldInput = ({
   rightItem,
   error,
-  variant = "outlined",
+  variant = "filled",
   ...props
 }: InputProps) => {
   return (
