@@ -120,7 +120,7 @@ const NoteCard = ({
         {isNotesPage && (
           <button
             className={cn(
-              "absolute top-0 cursor-pointer  right-0 p-3  opacity-0 group-hover:opacity-100",
+              "absolute top-0 cursor-pointer hidden sm:block right-0 p-3  opacity-0 group-hover:opacity-100",
               note.isPinned && "opacity-100",
             )}
             onClick={handlePinUnpin}
