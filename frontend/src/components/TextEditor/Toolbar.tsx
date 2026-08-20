@@ -4,12 +4,11 @@ import {
   CreateLinkButton,
   FormattingToolbar,
 } from "@blocknote/react";
-import { Check, ChevronDown, Image, Loader2 } from "lucide-react";
+import { Check, ChevronDown, Loader2 } from "lucide-react";
 import {
   useEffect,
   useRef,
   useState,
-  type ChangeEvent,
   type JSX,
 } from "react";
 import { COLOR_SELECT_OPTIONS } from "@/shared/text-editor.constant";
