@@ -7,7 +7,7 @@ import { MASONARY_BREAKPOINT_COLUMNS } from "@/shared/constants";
 
 
 const NotesView = ({ notes, title }: { notes: Note[]; title?: string }) => {
-  const [openedNote, setOpenedNote] = useState<Note>();
+  const [openedNote, setOpenedNote] = useState<Note | null>();
 
   return (
     <>
