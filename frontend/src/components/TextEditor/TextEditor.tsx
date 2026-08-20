@@ -135,6 +135,25 @@ const TextEditor = ({ note }: { note: Note }) => {
     setValue("content", markdown, { shouldDirty: true });
   };
 
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
+    if (event.key !== "Backspace") return;
+
+    const { block } = editor.getTextCursorPosition();
+
+    if (block.type !== "checkListItem") return;
+
+    const text = block.content
+      .filter((content) => content.type === "text")
+      .map((content) => content.text)
+      .join("");
+
+    if (text !== "") return;
+
+    event.preventDefault();
+
+    editor.removeBlocks([block.id])
+  };
+
   return (
     <FormProvider {...form}>
       <div
@@ -143,7 +162,7 @@ const TextEditor = ({ note }: { note: Note }) => {
           NOTES_COLOR_CLASS_MAP[color],
         )}
       >
-        <div className="min-w-0 w-full max-w-full flex flex-col p-3 pt-6 pb-0 px-3 max-h-[calc(100dvh-0.5rem)] sm:max-h-[calc(100vh-11rem)] box-border overflow-auto scrollbar">
+        <div className="min-w-0 w-full max-w-full flex flex-col p-3 pt-6 pb-0 px-0 sm:px-3 max-h-[calc(100dvh-0.5rem)] sm:max-h-[calc(100vh-11rem)] box-border overflow-auto scrollbar">
           {imageUrl && (
             <img
               src={imageUrl}
@@ -165,6 +184,7 @@ const TextEditor = ({ note }: { note: Note }) => {
               className="w-full min-w-0 max-w-full rounded-2xl"
               sideMenu={false}
               onChange={handleContentChange}
+              onKeyDown={handleKeyDown}
             >
               <CustomToolbar isSaving={isSaving} showSaving={showSaving} />
             </BlockNoteView>

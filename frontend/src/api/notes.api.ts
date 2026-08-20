@@ -137,3 +137,12 @@ export const createNote = async (type: NoteType) => {
         throw error
     }
 }
+
+export const emptyTrash = async () => {
+    try {
+        await api.delete("/notes/trash")
+    }
+    catch (error) {
+        throw error
+    }
+}

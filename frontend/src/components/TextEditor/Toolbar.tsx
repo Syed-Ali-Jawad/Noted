@@ -49,7 +49,7 @@ const CustomToolbar = ({
     <div className="sticky sm:absolute  bg-white sm:bg-[unset]  max-w-screen sm:max-w-[unset] bottom-0 sm:bottom-3 sm:left-1/2 sm:-translate-x-1/2 w-full sm:w-[95%] h-9">
       <FormattingToolbar>
         <div className="flex w-full pr-3 items-center justify-between">
-          <div className="flex  items-center">
+          <div className="flex gap-x-1 items-center">
             {/* <NoteTypeSelect value={noteType} onChange={handleTypeChange} /> */}
             {/* <div className="border-l-2 border-l-slate-300  h-4 mx-2" /> */}
             {noteType === NoteType.RICHTEXT && <BlockTypeSelect />}
@@ -59,7 +59,7 @@ const CustomToolbar = ({
             <BasicTextStyleButton basicTextStyle="strike" />
             <CreateLinkButton />
             {/* <ImageInput /> */}
-            <div className="border-l-2 border-l-slate-300  h-4 mx-2" />
+            <div className="border-l-2 border-l-slate-300  h-4 ml-1" />
             <ColorSelect selectedColor={color} handleSelect={handleColorPick} />
           </div>
           <div

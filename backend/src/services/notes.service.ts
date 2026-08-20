@@ -143,6 +143,9 @@ export const dbGetNote = async (userId: string, search?: string) => {
                 ...(search ? [{ OR: [{ title: { contains: search, mode: Prisma.QueryMode.insensitive } }, { content: { contains: search, mode: Prisma.QueryMode.insensitive } }] }] : [])
             ]
         },
+        orderBy: {
+            updatedAt: "desc",
+        },
         select: {
             id: true,
             title: true,
@@ -172,6 +175,9 @@ export const dbGetNoteByArchived = async (userId: string, search?: string) => {
                 ...(search ? [{ OR: [{ title: { contains: search, mode: Prisma.QueryMode.insensitive } }, { content: { contains: search, mode: Prisma.QueryMode.insensitive } }] }] : [])
             ]
         },
+        orderBy: {
+            updatedAt: "desc",
+        },
         select: {
             id: true,
             title: true,
@@ -198,6 +204,9 @@ export const dbGetTrashedNotes = async (userId: string, search?: string) => {
                 { OR: [{ title: { not: "" } }, { content: { not: "" } }] },
                 ...(search ? [{ OR: [{ title: { contains: search, mode: Prisma.QueryMode.insensitive } }, { content: { contains: search, mode: Prisma.QueryMode.insensitive } }] }] : [])
             ]
+        },
+        orderBy: {
+            updatedAt: "desc",
         },
         select: {
             id: true,
@@ -226,6 +235,9 @@ export const dbGetPinnedNotes = async (userId: string, search?: string) => {
                 { OR: [{ title: { not: "" } }, { content: { not: "" } }] },
                 ...(search ? [{ OR: [{ title: { contains: search, mode: Prisma.QueryMode.insensitive } }, { content: { contains: search, mode: Prisma.QueryMode.insensitive } }] }] : [])
             ]
+        },
+        orderBy: {
+            updatedAt: "desc",
         },
         select: {
             id: true,

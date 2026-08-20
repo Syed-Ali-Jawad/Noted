@@ -3,7 +3,7 @@ import Sidebar from "./Sidebar";
 import { ChevronLeft, CircleCheck, LogOut, Menu, Search } from "lucide-react";
 import { Input } from "@/ui/input";
 
-import { cn } from "@/lib/utils";
+import { cn, revalidate } from "@/lib/utils";
 import { useLocation, useNavigate } from "react-router-dom";
 import useNotesStore from "@/store";
 import { PAGE_ROUTES, SIDEBAR_OPTIONS } from "@/shared/constants";
@@ -12,6 +12,8 @@ import Logo from "../assets/logo.svg";
 import NoteActions from "./NoteActions";
 import api from "@/api/client";
 import { mutate } from "swr";
+import useSWRMutation from "swr/mutation";
+import { emptyTrash } from "@/api/notes.api";
 
 const NotesPageLayout = ({
   children,
@@ -24,6 +26,12 @@ const NotesPageLayout = ({
   const location = useLocation();
 
   const [searchInput, setSearchInput] = useState<string>("")
+
+  const { trigger: handleEmptyTrash } = useSWRMutation("/notes/trash", emptyTrash, {
+    onSuccess: () => {
+      revalidate("/notes/trashed");
+    }
+  })
 
   const isTrashPage = location.pathname === PAGE_ROUTES.trash;
 
@@ -56,10 +64,7 @@ const NotesPageLayout = ({
 
 
 
-  const handleEmptyTrash = async () => {
-    await api.delete("/notes/trash")
-    mutate("notes/trashed")
-  }
+
 
   return (
     <div

@@ -25,7 +25,7 @@ const NoteCard = ({
   note: Note;
   setOpenedNote: (note: Note) => void;
 }) => {
-  const { title, image, color, type, content } = note;
+  const { title, color, type, content } = note;
   const { pathname } = useLocation();
 
   const editor = useEditor({
@@ -84,13 +84,13 @@ const NoteCard = ({
         )}
       >
         <div onClick={() => setOpenedNote(note)}>
-          {image && (
+          {/* {image && (
             <img
               src={image}
               alt={`${title}-note-image`}
               className="w-full mb-2 rounded-lg"
             />
-          )}
+          )} */}
           <p className="text-xl font-bold mb-2">{title}</p>
           <div className="note-view" onClick={() => setOpenedNote(note)}>
             <BlockNoteView
