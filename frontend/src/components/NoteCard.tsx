@@ -12,8 +12,6 @@ import { useLocation } from "react-router-dom";
 
 import { BlockNoteView } from "@blocknote/mantine";
 import "./TextEditor/editor.css";
-import { NoteType } from "@/types/enums";
-import { checkListToMarkdown } from "./TextEditor/utils";
 import { ColorSelect } from "./TextEditor/Toolbar";
 import NoteActions from "./NoteActions";
 import useEditor from "@/hooks/useEditor";
@@ -98,7 +96,7 @@ const NoteCard = ({
             />
           )}
           <p className="text-xl font-bold mb-2">{title}</p>
-          <div className="note-view" onClick={(e) => setOpenedNote(note)}>
+          <div className="note-view" onClick={() => setOpenedNote(note)}>
             <BlockNoteView
               editor={editor}
               editable={false}

@@ -59,7 +59,7 @@ export const getTrashedNotes = async (search?: string) => {
         if (search?.trim()) {
             params.set("search", search.trim());
         }
-        
+
         const { data } = await api.get(`/notes/trashed${search ? `?search=${search}` : ""}`)
 
         return data.notes
@@ -106,7 +106,7 @@ type UpdateNoteArgs = {
 };
 
 export const updateSingleNote = async (
-    url: string,
+    _url: string,
     { arg }: { arg: UpdateNoteArgs }
 ) => {
     try {
@@ -118,7 +118,7 @@ export const updateSingleNote = async (
     }
 }
 
-export const updateNotes = async (url: string, { arg }: { arg: { ids: string[], updates: Partial<Note> } }) => {
+export const updateNotes = async (_url: string, { arg }: { arg: { ids: string[], updates: Partial<Note> } }) => {
     try {
         const { data } = await api.patch("/notes", { ids: arg.ids, ...arg.updates });
         return data;

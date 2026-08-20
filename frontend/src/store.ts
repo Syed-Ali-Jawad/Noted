@@ -1,7 +1,4 @@
 import { create } from "zustand";
-import type { Note } from "./types/notes.type";
-import { MOCK_NOTES } from "./shared/constants";
-import type { NoteType } from "./types/enums";
 
 
 interface Store {

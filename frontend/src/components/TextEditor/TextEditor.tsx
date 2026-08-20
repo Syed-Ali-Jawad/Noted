@@ -7,16 +7,14 @@ import CustomToolbar from "./Toolbar";
 import { FormProvider, useForm } from "react-hook-form";
 import { NoteType } from "@/types/enums";
 import { cn } from "@/lib/utils";
-import { NOTES_COLOR_CLASS_MAP, PAGE_ROUTES } from "@/shared/constants";
+import { NOTES_COLOR_CLASS_MAP } from "@/shared/constants";
 import type { Note } from "@/types/notes.type";
 import { useEffect, useState } from "react";
 import {
   checkListToMarkdown,
 } from "./utils";
-import useNotesStore from "@/store";
 import useEditor from "@/hooks/useEditor";
 import useSWRMutation from "swr/mutation";
-import { useLocation } from "react-router-dom";
 import { mutate } from "swr";
 import { updateSingleNote } from "@/api/notes.api";
 
@@ -25,7 +23,7 @@ const defaultValues: Note = {
   title: "",
   content: "",
   type: NoteType.TEXT,
-  color: "white",
+  color: "WHITE",
   image: null,
   isArchived: false,
   isPinned: false,

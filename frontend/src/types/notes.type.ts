@@ -12,7 +12,7 @@ export type Note = {
   archivedAt: string | null;
   isArchived: boolean;
   isPinned: boolean;
-  isTrashed:boolean
+  isTrashed: boolean
 };
 
 export type CheckListBlock = Block & {
@@ -21,4 +21,4 @@ export type CheckListBlock = Block & {
   props: { checked: boolean };
 };
 
-export type NoteColor = "blue" | "green" | "yellow" | "white" | "purple";
+export type NoteColor = "BLUE" | "GREEN" | "YELLOW" | "WHITE" | "PURPLE";

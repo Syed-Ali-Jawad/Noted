@@ -119,54 +119,54 @@ const ImageInput = () => {
   );
 };
 
-const NoteTypeSelect = ({
-  value,
-  onChange,
-}: {
-  value: NoteType;
-  onChange: (val: NoteType) => void;
-}) => {
-  const selectedOption = NOTE_TYPE_OPTIONS.find((opt) => opt.value === value);
-  console.log(selectedOption, value)
-  return (
-    <BlockNoteStyleSelect
-      triggerElement={
-        <div className="flex items-center gap-x-2 text-xs text-(--bn-colors-menu-text)">
-          {selectedOption &&
-            createElement(selectedOption.icon, {
-              className: "w-4 h-4",
-            })}
-          {selectedOption?.label}
-        </div>
-      }
-      options={NOTE_TYPE_OPTIONS}
-      renderMenuItem={(item) => (
-        <button
-          key={item.value}
-          type="button"
-          onClick={() => onChange(item.value as NoteType)}
-          className="
-                flex w-full max-w-46.25 cursor-pointer
-                items-center justify-between
-                rounded-sm px-2 py-1.5
-                text-left text-xs
-                text-(--bn-colors-menu-text)
-                hover:bg-(--bn-colors-hovered-background)
-              "
-        >
-          <div className="flex items-center gap-x-2">
-            {createElement(item.icon, {
-              className: "w-4 h-4",
-            })}
-            {item.label}
-          </div>
+// const NoteTypeSelect = ({
+//   value,
+//   onChange,
+// }: {
+//   value: NoteType;
+//   onChange: (val: NoteType) => void;
+// }) => {
+//   const selectedOption = NOTE_TYPE_OPTIONS.find((opt) => opt.value === value);
+//   console.log(selectedOption, value)
+//   return (
+//     <BlockNoteStyleSelect
+//       triggerElement={
+//         <div className="flex items-center gap-x-2 text-xs text-(--bn-colors-menu-text)">
+//           {selectedOption &&
+//             createElement(selectedOption.icon, {
+//               className: "w-4 h-4",
+//             })}
+//           {selectedOption?.label}
+//         </div>
+//       }
+//       options={NOTE_TYPE_OPTIONS}
+//       renderMenuItem={(item) => (
+//         <button
+//           key={item.value}
+//           type="button"
+//           onClick={() => onChange(item.value as NoteType)}
+//           className="
+//                 flex w-full max-w-46.25 cursor-pointer
+//                 items-center justify-between
+//                 rounded-sm px-2 py-1.5
+//                 text-left text-xs
+//                 text-(--bn-colors-menu-text)
+//                 hover:bg-(--bn-colors-hovered-background)
+//               "
+//         >
+//           <div className="flex items-center gap-x-2">
+//             {createElement(item.icon, {
+//               className: "w-4 h-4",
+//             })}
+//             {item.label}
+//           </div>
 
-          {value === item.value && <Icons.BlockNoteIcon />}
-        </button>
-      )}
-    />
-  );
-};
+//           {value === item.value && <Icons.BlockNoteIcon />}
+//         </button>
+//       )}
+//     />
+//   );
+// };
 
 export const ColorSelect = ({
   selectedColor,

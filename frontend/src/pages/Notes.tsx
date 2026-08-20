@@ -56,7 +56,7 @@ const Notes = () => {
             {(notes || []).length > 0 && (
               <NotesView notes={notes || []} title="other notes" />
             )}
-            {isLoading && <Loader2 className="animate-spin mx-auto size-40 aspect-square text-gray-400 stroke-1" />}
+            {(isLoading || isPinnedLoading) && <Loader2 className="animate-spin mx-auto size-40 aspect-square text-gray-400 stroke-1" />}
             {(notes?.length === 0 && pinnedNotes?.length === 0) && <p>No items</p>}
           </div>
           <div

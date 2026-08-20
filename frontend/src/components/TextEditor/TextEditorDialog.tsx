@@ -1,7 +1,6 @@
 import { Dialog, DialogContent } from "@/ui/dialog";
 import { useEffect, useState } from "react";
 import TextEditor from "./TextEditor";
-import useNotesStore from "@/store";
 import { PAGE_ROUTES } from "@/shared/constants";
 import { Pin, X } from "lucide-react";
 import { cn } from "@/lib/utils";
