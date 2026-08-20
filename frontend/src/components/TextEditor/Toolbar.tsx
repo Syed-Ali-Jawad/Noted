@@ -83,36 +83,36 @@ const CustomToolbar = ({
 
 export default CustomToolbar;
 
-const ImageInput = () => {
-  const { setValue } = useFormContext();
+// const ImageInput = () => {
+//   const { setValue } = useFormContext();
 
-  const handleImageSelect = (e: ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
+//   const handleImageSelect = (e: ChangeEvent<HTMLInputElement>) => {
+//     const file = e.target.files?.[0];
 
-    if (!file) return;
+//     if (!file) return;
 
-    const url = URL.createObjectURL(file);
+//     const url = URL.createObjectURL(file);
 
-    setValue("image", url, {
-      shouldDirty: true,
-    });
-  };
+//     setValue("image", url, {
+//       shouldDirty: true,
+//     });
+//   };
 
-  return (
-    <div className="w-7.5 h-7.5 flex items-center justify-center">
-      <input
-        type="file"
-        className="hidden"
-        id="image"
-        accept="image/*"
-        onChange={handleImageSelect}
-      />
-      <label htmlFor="image" className="cursor-pointer">
-        <Image className="text-(--bn-colors-menu-text)" size={17} />
-      </label>
-    </div>
-  );
-};
+//   return (
+//     <div className="w-7.5 h-7.5 flex items-center justify-center">
+//       <input
+//         type="file"
+//         className="hidden"
+//         id="image"
+//         accept="image/*"
+//         onChange={handleImageSelect}
+//       />
+//       <label htmlFor="image" className="cursor-pointer">
+//         <Image className="text-(--bn-colors-menu-text)" size={17} />
+//       </label>
+//     </div>
+//   );
+// };
 
 // const NoteTypeSelect = ({
 //   value,
