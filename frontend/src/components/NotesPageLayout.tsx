@@ -100,7 +100,7 @@ const NotesPageLayout = ({
 
           {isTrashPage && trashNotes?.length > 0 && (
             <button
-              onClick={handleEmptyTrash}
+              onClick={() => handleEmptyTrash()}
               className="block sm:hidden  min-w-36 fixed bottom-4 right-4 font-semibold px-4 py-2 bg-primary text-white rounded-full shadow-[0_0_5px_5px_rgba(0,0,0,0.1)] flex justify-center "
             >
               {isMutating ? <Loader2 className="animate-spin text-white" /> : "Empty Trash"}
@@ -146,7 +146,7 @@ const DesktopTopbar = ({
       </div>
       <div className="flex gap-x-4 items-self-center justify-end text-primary font-semibold [&_button]:cursor-pointer">
         {isTrashPage && trashNotes?.length > 0 && (
-          <button onClick={handleEmptyTrash} className="flex items-center">{isMutating && <Loader2 className="animate-spin text-primary mr-2" size={20} />}Empty Trash</button>
+          <button onClick={() => handleEmptyTrash()} className="flex items-center">{isMutating && <Loader2 className="animate-spin text-primary mr-2" size={20} />}Empty Trash</button>
         )}
         {selectedNotes.length > 0 && (
           <NoteActions className="flex gap-x-4" showLabels />
