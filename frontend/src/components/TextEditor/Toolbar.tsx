@@ -59,7 +59,7 @@ const CustomToolbar = ({
             <BasicTextStyleButton basicTextStyle="underline" />
             <BasicTextStyleButton basicTextStyle="strike" />
             <CreateLinkButton />
-            <ImageInput />
+            {/* <ImageInput /> */}
             <div className="border-l-2 border-l-slate-300  h-4 mx-2" />
             <ColorSelect selectedColor={color} handleSelect={handleColorPick} />
           </div>

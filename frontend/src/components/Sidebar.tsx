@@ -11,6 +11,11 @@ const Sidebar = () => {
   const navigate = useNavigate();
   const { pathname } = useLocation();
 
+  const handleLogout = () => {
+    localStorage.clear();
+    navigate("/login", { replace: true });
+  }
+
   return (
     <div className="w-60 mt-4 bg-white hidden lg:flex rounded-xl h-[95dvh]  max-h-173.25 p-6 sticky top-4  flex-col justify-between">
       <div>
@@ -50,6 +55,7 @@ const Sidebar = () => {
           })}
         </div>
       </div>
+      <button onClick={handleLogout} className="w-full cursor-pointer hover:opacity-90 transition-opacity duration-300 bg-primary rounded-lg py-2 text-white font-semibold shadow-[0px_0px_4px_rgba(0,0,0,0.4)]">Logout</button>
       {/* <div className="flex items-center justify-between">
         <div className="flex gap-x-3 items-center">
           <Avatar className="shadow-md" />

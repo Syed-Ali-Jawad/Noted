@@ -4,7 +4,8 @@ import { PAGE_ROUTES } from "@/shared/constants";
 import Icons from "@/shared/icons";
 import useNotesStore from "@/store";
 import type { Note } from "@/types/notes.type";
-import { Archive, ArchiveRestore, Trash2 } from "lucide-react";
+import { Archive, ArchiveRestore, Loader2, Trash2 } from "lucide-react";
+import { useState } from "react";
 import { useLocation } from "react-router-dom";
 import { mutate } from "swr";
 import useSWRMutation from "swr/mutation";
@@ -21,10 +22,13 @@ const NoteActions = ({
   const { pathname } = useLocation();
   const {
     selectedNotes,
+    resetNotesSelection
   } = useNotesStore();
 
   const isArchivePage = pathname === PAGE_ROUTES.archive;
   const isTrashPage = pathname === PAGE_ROUTES.trash;
+
+  const [bulkApiRunning, setBulkApiRunning] = useState<string>()
 
   const { trigger: updateNoteById } = useSWRMutation("/note/id", updateSingleNote, {
     onSuccess: () => {
@@ -36,11 +40,14 @@ const NoteActions = ({
   })
 
   const { trigger: updateNotesBulk } = useSWRMutation("/notes", updateNotes, {
-    onSuccess: () => {
-      mutate("/notes");
-      mutate("/notes/pinned");
-      mutate("/notes/archived");
-      mutate("/notes/trashed");
+    onSuccess: async () => {
+      await Promise.all([
+        mutate("/notes"),
+        mutate("/notes/pinned"),
+        mutate("/notes/archived"),
+        mutate("/notes/trashed")
+      ]);
+      resetNotesSelection()
     }
   })
 
@@ -71,6 +78,7 @@ const NoteActions = ({
     if (note) {
       await updateNoteById({ id: note.id, updates: { isTrashed: true } });
     } else if (selectedNotes.length > 0) {
+      setBulkApiRunning("move-to-trash")
       await updateNotesBulk({ ids: selectedNotes, updates: { isTrashed: true } })
     }
     showToast("moved to trash");
@@ -81,6 +89,7 @@ const NoteActions = ({
       await updateNoteById({ id: note.id, updates: { isArchived: !note.isArchived } });
 
     } else if (selectedNotes.length > 0) {
+      setBulkApiRunning("archive")
       await updateNotesBulk({ ids: selectedNotes, updates: { isArchived: !isArchivePage } })
     }
     showToast(`${isArchivePage ? "Un" : ""}archived`);
@@ -90,6 +99,7 @@ const NoteActions = ({
     if (note) {
       await updateNoteById({ id: note.id, updates: { isTrashed: false, isArchived: false } });
     } else if (selectedNotes.length > 0) {
+      setBulkApiRunning("restore-trash")
       await updateNotesBulk({ ids: selectedNotes, updates: { isTrashed: false, isArchived: false } })
     }
     showToast("restored");
@@ -103,7 +113,7 @@ const NoteActions = ({
           className="cursor-pointer"
           onClick={toggleArchive}
         >
-          {getArchiveButton(isArchivePage, showLabels ?? false)}
+          {showLabels ? <span className="inline-flex items-center gap-x-2">{bulkApiRunning === "archive" && <ActionLoader />} {getArchiveButton(isArchivePage, showLabels ?? false)}</span> : getArchiveButton(isArchivePage, showLabels ?? false)}
         </button>
       ) : (
         <button
@@ -111,7 +121,7 @@ const NoteActions = ({
           className="cursor-pointer"
           onClick={restoreTrash}
         >
-          {showLabels ? "Restore" : <Icons.RestoreFromTrash size={20} />}
+          {showLabels ? <span className="inline-flex items-center gap-x-2">{bulkApiRunning === "restore-trash" && <ActionLoader />}Restore</span> : <Icons.RestoreFromTrash size={20} />}
         </button>
       )}
       <button
@@ -119,7 +129,7 @@ const NoteActions = ({
         title={isTrashPage ? "Delete" : "Move to Trash"}
       >
         {showLabels ? (
-          "Delete"
+          <span className="inline-flex items-center gap-x-2">{(bulkApiRunning === "move-to-trash" && !isTrashPage) && <ActionLoader />}Delete</span>
         ) : (
           <Trash2 size={18} className="cursor-pointer" />
         )}
@@ -136,3 +146,6 @@ const getArchiveButton = (isArchivePage: boolean, showLabels: boolean) => {
 
   return showLabels ? "Archive" : <Archive size={18} />;
 };
+
+
+const ActionLoader = () => <Loader2 className="animate-spin text-primary" size={18} />

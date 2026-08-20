@@ -1,6 +1,6 @@
 import React, { createElement, useEffect, useRef, useState } from "react";
 import Sidebar from "./Sidebar";
-import { ChevronLeft, CircleCheck, Menu, Search } from "lucide-react";
+import { ChevronLeft, CircleCheck, LogOut, Menu, Search } from "lucide-react";
 import { Input } from "@/ui/input";
 
 import { cn } from "@/lib/utils";
@@ -54,12 +54,7 @@ const NotesPageLayout = ({
     return () => clearTimeout(timer)
   }, [searchInput])
 
-  const handleActionTrigger = (e: React.MouseEvent<HTMLDivElement>) => {
-    const element = e.target as HTMLElement;
-    if (element.closest("button")) {
-      resetNotesSelection();
-    }
-  };
+
 
   const handleEmptyTrash = async () => {
     await api.delete("/notes/trash")
@@ -84,11 +79,9 @@ const NotesPageLayout = ({
             )}
           >
             <DesktopTopbar
-              handleActionTrigger={handleActionTrigger}
               setSearchInput={setSearchInput}
             />
             <MobileTopBar
-              handleActionTrigger={handleActionTrigger}
               setSearchInput={setSearchInput}
             />
           </div>
@@ -116,10 +109,8 @@ const NotesPageLayout = ({
 export default NotesPageLayout;
 
 const DesktopTopbar = ({
-  handleActionTrigger,
   setSearchInput,
 }: {
-  handleActionTrigger: (e: React.MouseEvent<HTMLDivElement>) => void;
   setSearchInput: (input: string) => void;
 }) => {
   const location = useLocation();
@@ -150,9 +141,8 @@ const DesktopTopbar = ({
           <button onClick={handleEmptyTrash}>Empty Trash</button>
         )}
         {selectedNotes.length > 0 && (
-          <div onClick={handleActionTrigger}>
-            <NoteActions className="flex gap-x-4" showLabels />
-          </div>
+          <NoteActions className="flex gap-x-4" showLabels />
+
         )}
 
         {/* <Avatar /> */}
@@ -162,10 +152,8 @@ const DesktopTopbar = ({
 };
 
 const MobileTopBar = ({
-  handleActionTrigger,
   setSearchInput,
 }: {
-  handleActionTrigger: (e: React.MouseEvent<HTMLDivElement>) => void;
   setSearchInput: (input: string) => void;
 }) => {
   const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
@@ -201,6 +189,11 @@ const MobileTopBar = ({
       document.removeEventListener("click", handleClickOutside);
     };
   }, []);
+
+  const handleLogout = () => {
+    localStorage.clear();
+    navigate('/login')
+  }
 
   return (
     <div className="relative block lg:hidden ">
@@ -303,6 +296,7 @@ const MobileTopBar = ({
                   </button>
                 );
               })}
+              <button className="flex gap-2 items-center rounded-full text-sm px-4 py-3 box-border w-full cursor-pointer font-medium" onClick={handleLogout}><LogOut size={20} className="ml-0.5" />Logout</button>
             </div>
           </div>
           {isSearchOpen && (
@@ -338,9 +332,7 @@ const MobileTopBar = ({
           </div>
           <div>
             {selectedNotes.length > 0 && (
-              <div onClick={handleActionTrigger}>
-                <NoteActions className="gap-x-4" />
-              </div>
+              <NoteActions className="gap-x-4" />
             )}
           </div>
         </div>
