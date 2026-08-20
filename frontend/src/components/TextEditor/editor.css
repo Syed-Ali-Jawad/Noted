@@ -35,8 +35,7 @@
   accent-color: #e05a2b !important;
 }
 
-.note-editor
-  .bn-block-content:has(.ProseMirror-trailingBreak:only-child):after {
+.note-editor .bn-block-content:has(.ProseMirror-trailingBreak:only-child):after {
   color: var(--color-gray-400) !important;
   font-weight: 300 !important;
   font-style: normal;
@@ -46,7 +45,7 @@
   align-items: center !important;
 }
 
-.bn-block-content[data-content-type="checkListItem"] > div > input {
+.bn-block-content[data-content-type="checkListItem"]>div>input {
   margin-top: 3px !important;
 }
 
@@ -81,14 +80,26 @@
   flex-shrink: 0;
 }
 
-.bn-editor input[type="checkbox"]:hover {
-  border-color: #475569; /* Solid slate border */
+.note-view .bn-editor input[type="checkbox"] {
+  pointer-events: none !important;
+}
+
+.note-view .bn-editor input[type="checkbox"] {
+  pointer-events: none !important;
+
+}
+
+.note-editor .bn-editor input[type="checkbox"]:hover {
+  border-color: #475569;
+  /* Solid slate border */
 }
 
 /* Checked State: Soft Background + Strong Solid Border & Tick */
 .bn-editor input[type="checkbox"]:checked {
-  background-color: #f1f5f9; /* Very soft light slate fill */
-  border-color: #475569; /* Solid slate border */
+  background-color: #f1f5f9;
+  /* Very soft light slate fill */
+  border-color: #475569;
+  /* Solid slate border */
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23475569' stroke-width='3.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='20 6 9 17 4 12'%3E%3C/polyline%3E%3C/svg%3E");
   background-size: 10px 10px;
   background-position: center;
@@ -99,9 +110,7 @@
   pointer-events: none;
 }
 
-.note-view
-  .bn-block-content[data-content-type="checkListItem"]
-  input[type="checkbox"] {
+.note-view .bn-block-content[data-content-type="checkListItem"] input[type="checkbox"] {
   pointer-events: auto;
   cursor: pointer;
 }
@@ -118,10 +127,11 @@
   font-size: 18px !important;
 }
 
-.note-view .bn-editor h1{
-  font-size: 20px!important;
+.note-view .bn-editor h1 {
+  font-size: 20px !important;
 }
 
-.note-view .bn-editor h2, h3{
-  font-size: 18px!important;
+.note-view .bn-editor h2,
+h3 {
+  font-size: 18px !important;
 }

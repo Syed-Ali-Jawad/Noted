@@ -1,5 +1,5 @@
 export enum NoteType {
-  LIST = "list",
-  TEXT = "text",
-  RICH_TEXT = "rich-text",
+  LIST = "CHECKLIST",
+  TEXT = "TEXT",
+  RICHTEXT = "RICHTEXT",
 }

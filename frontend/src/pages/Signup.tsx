@@ -3,11 +3,14 @@ import Logo from "@/assets/logo.svg";
 import FieldInput from "@/components/form-field/FieldInput";
 import PasswordInput from "@/components/form-field/PasswordInput";
 
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import type { RegisterForm } from "@/types/forms.type";
-import { EMAIL_PATTERN } from "@/shared/constants";
+import { EMAIL_PATTERN, PASSWORD_PATTERN } from "@/shared/constants";
 import Button from "@/ui/custom-button";
+import useSWRMutation from "swr/mutation";
+import { signup } from "@/api/auth.api";
+import { Loader2 } from "lucide-react";
 
 const defaultValues = {
   fullName: "",
@@ -26,6 +29,10 @@ const Signup = () => {
     defaultValues,
   });
 
+  const navigate = useNavigate()
+
+  const { trigger: handleSignup, isMutating: isSigningUp, error } = useSWRMutation("/register", signup, { onSuccess: () => navigate("/login") })
+
   const onSubmit = (data: RegisterForm) => {
     if (data.password !== data.confirmPassword) {
       setError("confirmPassword", {
@@ -35,7 +42,7 @@ const Signup = () => {
       return;
     }
 
-    console.table(data);
+    handleSignup(data);
   };
   return (
     <GradientPage>
@@ -74,7 +81,12 @@ const Signup = () => {
           <PasswordInput
             placeholder="Password"
             variant="filled"
-            {...register("password", { required: "Password is required" })}
+            {...register("password", {
+              required: "Password is required", pattern: {
+                value: PASSWORD_PATTERN,
+                message: "Password must be atleast 8 characters long."
+              }
+            })}
             error={errors.password}
           />
           <PasswordInput
@@ -82,10 +94,17 @@ const Signup = () => {
             variant="filled"
             {...register("confirmPassword", {
               required: "Please confirm your password",
+              pattern: {
+                value: PASSWORD_PATTERN,
+                message: "Password must be atleast 8 characters long."
+              }
             })}
             error={errors.confirmPassword}
           />
-          <Button className="w-full">Signup</Button>
+          <div className="flex flex-col gap-y-2 items-center">
+            <Button className="w-full flex gap-x-2 items-center justify-center" disabled={isSigningUp}>{isSigningUp && <Loader2 className="animate-spin" />}<span>Sign up</span></Button>
+            {error && <p className="text-primary text-xs">{error?.response?.data?.message}</p>}
+          </div>
         </div>
         <p className="border-t border-slate-200 pt-6">
           Already have an account?{" "}

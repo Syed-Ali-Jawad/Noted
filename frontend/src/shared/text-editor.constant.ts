@@ -8,10 +8,10 @@ export const NOTE_TYPE_OPTIONS: {
   label: string;
   value: NoteType;
 }[] = [
-  { icon: Type, label: "Text", value: NoteType.TEXT },
-  { icon: SquareCheck, label: "CheckList", value: NoteType.LIST },
-  { icon: RichTextIcon, label: "RichText", value: NoteType.RICH_TEXT },
-];
+    { icon: Type, label: "Text", value: NoteType.TEXT },
+    { icon: SquareCheck, label: "CheckList", value: NoteType.LIST },
+    { icon: RichTextIcon, label: "RichText", value: NoteType.RICHTEXT },
+  ];
 
 export const COLOR_SELECT_OPTIONS = Object.entries(NOTES_COLOR_CLASS_MAP).map(
   (item) => ({

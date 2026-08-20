@@ -1,68 +1,97 @@
+import { deleteNotes, deleteSingleNote, updateNotes, updateSingleNote } from "@/api/notes.api";
 import { cn, toast } from "@/lib/utils";
 import { PAGE_ROUTES } from "@/shared/constants";
 import Icons from "@/shared/icons";
 import useNotesStore from "@/store";
+import type { Note } from "@/types/notes.type";
 import { Archive, ArchiveRestore, Trash2 } from "lucide-react";
 import { useLocation } from "react-router-dom";
+import { mutate } from "swr";
+import useSWRMutation from "swr/mutation";
 
 const NoteActions = ({
   showLabels,
-  noteId,
+  note,
   className,
 }: {
   showLabels?: boolean;
-  noteId?: string;
+  note?: Note;
   className?: string;
 }) => {
   const { pathname } = useLocation();
   const {
-    toggleArchiveNotes,
-    restoreTrashedNotes,
-    deleteFromTrash,
-    moveToTrash,
-    notes,
-    trashNotes,
     selectedNotes,
   } = useNotesStore();
 
   const isArchivePage = pathname === PAGE_ROUTES.archive;
   const isTrashPage = pathname === PAGE_ROUTES.trash;
 
-  const targetNote: string[] = noteId ? [noteId] : selectedNotes;
+  const { trigger: updateNoteById } = useSWRMutation("/note/id", updateSingleNote, {
+    onSuccess: () => {
+      mutate("/notes");
+      mutate("/notes/pinned");
+      mutate("/notes/archived");
+      mutate("/notes/trashed");
+    }
+  })
 
-  const title = (isTrashPage ? trashNotes : notes).find(
-    (note) => note.id === noteId,
-  )?.title;
+  const { trigger: updateNotesBulk } = useSWRMutation("/notes", updateNotes, {
+    onSuccess: () => {
+      mutate("/notes");
+      mutate("/notes/pinned");
+      mutate("/notes/archived");
+      mutate("/notes/trashed");
+    }
+  })
 
   const showToast = (action: string) => {
-    let message = title ? `Note "${title}" is ${action}.` : "";
-
-    if (selectedNotes.length > 0)
+    let message: string;
+    if (!note) {
       message = `${selectedNotes.length} note${selectedNotes.length > 1 ? "s were" : " was"} ${action}.`;
+    } else {
+      message = `Note ${note.title ? `"${note.title}"` : ""} is ${action}.`
+    }
 
     toast({
       message,
     });
   };
 
-  const handleDelete = () => {
+  const handleDelete = async () => {
     if (isTrashPage) {
-      deleteFromTrash(targetNote);
+      if (note) {
+        await deleteSingleNote(note.id)
+      } else if (selectedNotes.length > 0) {
+        await deleteNotes({ arg: selectedNotes })
+      }
+      mutate(`/notes/trashed`)
       showToast("deleted permenantly");
       return;
     }
-
-    moveToTrash(targetNote);
+    if (note) {
+      await updateNoteById({ id: note.id, updates: { isTrashed: true } });
+    } else if (selectedNotes.length > 0) {
+      await updateNotesBulk({ ids: selectedNotes, updates: { isTrashed: true } })
+    }
     showToast("moved to trash");
   };
 
-  const toggleArchive = () => {
-    toggleArchiveNotes(targetNote);
+  const toggleArchive = async () => {
+    if (note) {
+      await updateNoteById({ id: note.id, updates: { isArchived: !note.isArchived } });
+
+    } else if (selectedNotes.length > 0) {
+      await updateNotesBulk({ ids: selectedNotes, updates: { isArchived: !isArchivePage } })
+    }
     showToast(`${isArchivePage ? "Un" : ""}archived`);
   };
 
-  const restoreTrash = () => {
-    restoreTrashedNotes(targetNote);
+  const restoreTrash = async () => {
+    if (note) {
+      await updateNoteById({ id: note.id, updates: { isTrashed: false, isArchived: false } });
+    } else if (selectedNotes.length > 0) {
+      await updateNotesBulk({ ids: selectedNotes, updates: { isTrashed: false, isArchived: false } })
+    }
     showToast("restored");
   };
 

@@ -10,6 +10,8 @@ import { PAGE_ROUTES, SIDEBAR_OPTIONS } from "@/shared/constants";
 import type { SideBarOption } from "@/types/common.type";
 import Logo from "../assets/logo.svg";
 import NoteActions from "./NoteActions";
+import api from "@/api/client";
+import { mutate } from "swr";
 
 const NotesPageLayout = ({
   children,
@@ -19,35 +21,17 @@ const NotesPageLayout = ({
   className?: string;
 }) => {
   const [isScrolled, setIsScrolled] = useState<boolean>(false);
-  const [searchInput, setSearchInput] = useState<string>("");
   const location = useLocation();
 
+  const [searchInput, setSearchInput] = useState<string>("")
+
   const isTrashPage = location.pathname === PAGE_ROUTES.trash;
-  const isArchivePage = location.pathname === PAGE_ROUTES.archive;
 
   const {
-    notes,
-    trashNotes,
-    resetNotesSelection,
-    emptyTrash,
     setSearch,
+    resetNotesSelection,
   } = useNotesStore();
 
-  const notesToSearch = isTrashPage
-    ? trashNotes
-    : isArchivePage
-      ? notes.filter((note) => note.isArchived)
-      : notes.filter((note) => !note.isArchived);
-
-  useEffect(() => {
-    const lowerCasedSearch = searchInput.toLowerCase();
-    const results = notesToSearch.filter(
-      (note) =>
-        note.title.toLowerCase().includes(lowerCasedSearch) ||
-        note.content.toLowerCase().includes(lowerCasedSearch),
-    );
-    setSearch({ search: searchInput, results });
-  }, [searchInput, location.pathname]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -63,13 +47,24 @@ const NotesPageLayout = ({
   // reset selected notes on pgae change
   useEffect(() => resetNotesSelection(), [location.pathname]);
 
- 
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setSearch(searchInput)
+    }, 500)
+    return () => clearTimeout(timer)
+  }, [searchInput])
+
   const handleActionTrigger = (e: React.MouseEvent<HTMLDivElement>) => {
     const element = e.target as HTMLElement;
     if (element.closest("button")) {
       resetNotesSelection();
     }
   };
+
+  const handleEmptyTrash = async () => {
+    await api.delete("/notes/trash")
+    mutate("notes/trashed")
+  }
 
   return (
     <div
@@ -85,7 +80,7 @@ const NotesPageLayout = ({
             className={cn(
               "sticky z-10 top-0 w-full",
               (isScrolled || isTrashPage) &&
-                "bg-[url('/bg-pattern.svg')] bg-cover bg-gray-700/10 bg-blend-overlay shadow-md",
+              "bg-[url('/bg-pattern.svg')] bg-cover bg-gray-700/10 bg-blend-overlay shadow-md",
             )}
           >
             <DesktopTopbar
@@ -104,9 +99,9 @@ const NotesPageLayout = ({
           )} */}
           <div className="px-4 md:px-8 pb-8">{children}</div>
 
-          {isTrashPage && trashNotes.length > 0 && (
+          {isTrashPage && (
             <button
-              onClick={emptyTrash}
+              onClick={handleEmptyTrash}
               className="block sm:hidden fixed bottom-4 right-4 font-semibold px-4 py-2 bg-primary text-white rounded-full shadow-[0_0_5px_5px_rgba(0,0,0,0.1)]"
             >
               Empty Trash
@@ -114,7 +109,7 @@ const NotesPageLayout = ({
           )}
         </div>
       </div>
-    </div>
+    </div >
   );
 };
 
@@ -129,9 +124,14 @@ const DesktopTopbar = ({
 }) => {
   const location = useLocation();
 
-  const { selectedNotes, trashNotes, emptyTrash } = useNotesStore();
+  const { selectedNotes } = useNotesStore();
 
   const isTrashPage = location.pathname === PAGE_ROUTES.trash;
+
+  const handleEmptyTrash = async () => {
+    await api.delete("/notes/trash")
+    mutate("notes/trashed")
+  }
 
   return (
     <div className="hidden lg:flex items-center justify-end pr-4 h-18">
@@ -146,8 +146,8 @@ const DesktopTopbar = ({
         />
       </div>
       <div className="flex gap-x-4 items-self-center justify-end text-primary font-semibold [&_button]:cursor-pointer">
-        {isTrashPage && trashNotes.length > 0 && (
-          <button onClick={emptyTrash}>Empty Trash</button>
+        {isTrashPage && (
+          <button onClick={handleEmptyTrash}>Empty Trash</button>
         )}
         {selectedNotes.length > 0 && (
           <div onClick={handleActionTrigger}>

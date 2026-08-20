@@ -44,21 +44,21 @@ const CustomToolbar = ({
     name: "type",
   });
 
-  const handleTypeChange = (type: NoteType) => {
-    setValue("type", type, {
-      shouldDirty: true,
-      shouldTouch: true,
-    });
-  };
+  // const handleTypeChange = (type: NoteType) => {
+  //   setValue("type", type, {
+  //     shouldDirty: true,
+  //     shouldTouch: true,
+  //   });
+  // };
 
   return (
     <div className="sticky sm:absolute  bg-white sm:bg-[unset]  max-w-screen sm:max-w-[unset] bottom-0 sm:bottom-3 sm:left-1/2 sm:-translate-x-1/2 w-full sm:w-[95%] h-9">
       <FormattingToolbar>
         <div className="flex w-full pr-3 items-center justify-between">
           <div className="flex  items-center">
-            <NoteTypeSelect value={noteType} onChange={handleTypeChange} />
-            <div className="border-l-2 border-l-slate-300  h-4 mx-2" />
-            {noteType === NoteType.RICH_TEXT && <BlockTypeSelect />}
+            {/* <NoteTypeSelect value={noteType} onChange={handleTypeChange} /> */}
+            {/* <div className="border-l-2 border-l-slate-300  h-4 mx-2" /> */}
+            {noteType === NoteType.RICHTEXT && <BlockTypeSelect />}
             <BasicTextStyleButton basicTextStyle="bold" />
             <BasicTextStyleButton basicTextStyle="italic" />
             <BasicTextStyleButton basicTextStyle="underline" />
@@ -127,7 +127,7 @@ const NoteTypeSelect = ({
   onChange: (val: NoteType) => void;
 }) => {
   const selectedOption = NOTE_TYPE_OPTIONS.find((opt) => opt.value === value);
-
+  console.log(selectedOption, value)
   return (
     <BlockNoteStyleSelect
       triggerElement={

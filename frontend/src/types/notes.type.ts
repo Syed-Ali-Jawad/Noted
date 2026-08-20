@@ -12,6 +12,7 @@ export type Note = {
   archivedAt: string | null;
   isArchived: boolean;
   isPinned: boolean;
+  isTrashed:boolean
 };
 
 export type CheckListBlock = Block & {
