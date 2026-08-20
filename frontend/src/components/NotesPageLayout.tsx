@@ -1,6 +1,6 @@
 import React, { createElement, useEffect, useRef, useState } from "react";
 import Sidebar from "./Sidebar";
-import { ChevronLeft, CircleCheck, LogOut, Menu, Search } from "lucide-react";
+import { ChevronLeft, CircleCheck, Loader2, LogOut, Menu, Search } from "lucide-react";
 import { Input } from "@/ui/input";
 
 import { cn, revalidate } from "@/lib/utils";
@@ -10,10 +10,10 @@ import { PAGE_ROUTES, SIDEBAR_OPTIONS } from "@/shared/constants";
 import type { SideBarOption } from "@/types/common.type";
 import Logo from "../assets/logo.svg";
 import NoteActions from "./NoteActions";
-import api from "@/api/client";
-import { mutate } from "swr";
+import useSWR from "swr";
 import useSWRMutation from "swr/mutation";
-import { emptyTrash } from "@/api/notes.api";
+import { emptyTrash, getTrashedNotes } from "@/api/notes.api";
+import type { Note } from "@/types/notes.type";
 
 const NotesPageLayout = ({
   children,
@@ -27,19 +27,22 @@ const NotesPageLayout = ({
 
   const [searchInput, setSearchInput] = useState<string>("")
 
-  const { trigger: handleEmptyTrash } = useSWRMutation("/notes/trash", emptyTrash, {
+  const {
+    setSearch,
+    resetNotesSelection,
+  } = useNotesStore();
+
+  const { data: trashNotes = [] } = useSWR(
+    "/notes/trashed",
+    () => getTrashedNotes()
+  );
+  const { trigger: handleEmptyTrash, isMutating } = useSWRMutation("/notes/trash", emptyTrash, {
     onSuccess: () => {
       revalidate("/notes/trashed");
     }
   })
 
   const isTrashPage = location.pathname === PAGE_ROUTES.trash;
-
-  const {
-    setSearch,
-    resetNotesSelection,
-  } = useNotesStore();
-
 
   useEffect(() => {
     const handleScroll = () => {
@@ -63,9 +66,6 @@ const NotesPageLayout = ({
   }, [searchInput])
 
 
-
-
-
   return (
     <div
       className={cn(
@@ -84,6 +84,7 @@ const NotesPageLayout = ({
             )}
           >
             <DesktopTopbar
+              trashNotes={trashNotes}
               setSearchInput={setSearchInput}
             />
             <MobileTopBar
@@ -97,12 +98,12 @@ const NotesPageLayout = ({
           )} */}
           <div className="px-4 md:px-8 pb-8">{children}</div>
 
-          {isTrashPage && (
+          {isTrashPage && trashNotes?.length > 0 && (
             <button
               onClick={handleEmptyTrash}
-              className="block sm:hidden fixed bottom-4 right-4 font-semibold px-4 py-2 bg-primary text-white rounded-full shadow-[0_0_5px_5px_rgba(0,0,0,0.1)]"
+              className="block sm:hidden  min-w-36 fixed bottom-4 right-4 font-semibold px-4 py-2 bg-primary text-white rounded-full shadow-[0_0_5px_5px_rgba(0,0,0,0.1)] flex justify-center "
             >
-              Empty Trash
+              {isMutating ? <Loader2 className="animate-spin text-white" /> : "Empty Trash"}
             </button>
           )}
         </div>
@@ -114,20 +115,22 @@ const NotesPageLayout = ({
 export default NotesPageLayout;
 
 const DesktopTopbar = ({
+  trashNotes,
   setSearchInput,
 }: {
+  trashNotes: Note[];
   setSearchInput: (input: string) => void;
 }) => {
   const location = useLocation();
 
   const { selectedNotes } = useNotesStore();
 
+  const { trigger: handleEmptyTrash, isMutating } = useSWRMutation("/notes/trash", emptyTrash, {
+    onSuccess: () => {
+      revalidate("/notes/trashed");
+    }
+  })
   const isTrashPage = location.pathname === PAGE_ROUTES.trash;
-
-  const handleEmptyTrash = async () => {
-    await api.delete("/notes/trash")
-    mutate("notes/trashed")
-  }
 
   return (
     <div className="hidden lg:flex items-center justify-end pr-4 h-18">
@@ -142,8 +145,8 @@ const DesktopTopbar = ({
         />
       </div>
       <div className="flex gap-x-4 items-self-center justify-end text-primary font-semibold [&_button]:cursor-pointer">
-        {isTrashPage && (
-          <button onClick={handleEmptyTrash}>Empty Trash</button>
+        {isTrashPage && trashNotes?.length > 0 && (
+          <button onClick={handleEmptyTrash} className="flex items-center">{isMutating && <Loader2 className="animate-spin text-primary mr-2" size={20} />}Empty Trash</button>
         )}
         {selectedNotes.length > 0 && (
           <NoteActions className="flex gap-x-4" showLabels />
