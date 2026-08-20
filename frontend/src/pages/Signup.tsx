@@ -48,7 +48,7 @@ const Signup = () => {
     <GradientPage>
       <form
         onSubmit={handleSubmit(onSubmit)}
-        className="bg-white shadow-2xl xs:rounded-2xl w-screen xs:w-auto xs:min-w-110 p-10 min-h-162 flex flex-col gap-y-8 items-center"
+        className="bg-white shadow-2xl xs:rounded-2xl w-screen  h-dvh xs:h-auto xs:w-auto xs:min-w-110 p-10 min-h-162 flex flex-col gap-y-8 items-center"
       >
         <div className="text-center">
           <img src={Logo} alt="Noted Logo" className="mx-auto w-auto h-12" />

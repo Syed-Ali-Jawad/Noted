@@ -38,8 +38,9 @@ const Login = () => {
       <div className="">
         <form
           onSubmit={handleSubmit(onSubmit)}
-          className="shadow-2xl relative w-full h-dvh  xs:w-auto xs:min-w-105 xs:h-148.75 bg-white rounded-2xl  overflow-hidden px-4 xs:px-10 flex flex-col justify-center items-center gap-y-8"
-        >
+          className="shadow-2xl relative w-screen h-dvh xs:w-auto xs:min-w-105 xs:h-148.75 bg-white rounded-2xl  overflow-hidden px-4 xs:px-10 flex flex-col justify-center items-center gap-y-8 "
+      
+      >
           <div className="flex flex-col gap-y-2 text-center">
             <img src={Logo} alt="writing icon" className="w-auto h-12" />
             <h1 className="font-bold text-2xl font-source-serif">
