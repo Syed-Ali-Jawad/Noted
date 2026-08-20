@@ -14,8 +14,11 @@ import {
   checkListToMarkdown,
 } from "./utils";
 import useNotesStore from "@/store";
-import { useLocation } from "react-router-dom";
 import useEditor from "@/hooks/useEditor";
+import useSWRMutation from "swr/mutation";
+import { useLocation } from "react-router-dom";
+import { mutate } from "swr";
+import { updateSingleNote } from "@/api/notes.api";
 
 const defaultValues: Note = {
   id: "",
@@ -26,14 +29,15 @@ const defaultValues: Note = {
   image: null,
   isArchived: false,
   isPinned: false,
+  isTrashed: false,
   archivedAt: null,
   createdAt: "",
 };
 
-const TextEditor = ({ noteId }: { noteId: string }) => {
-  const [isSaving, setIsSaving] = useState<boolean>(false);
+const TextEditor = ({ note }: { note: Note }) => {
   const [showSaving, setShowSaving] = useState<boolean>(false);
   const [imageUrl, setImageUrl] = useState<string | null>(null);
+
 
   const form = useForm<Note>({
     defaultValues,
@@ -47,12 +51,14 @@ const TextEditor = ({ noteId }: { noteId: string }) => {
     formState: { isDirty },
   } = form;
 
-  const { updateNote, notes, trashNotes } = useNotesStore();
-  const { pathname } = useLocation();
-
-  const baseNotes = pathname === PAGE_ROUTES.trash ? trashNotes : notes;
-
-  const note: Note = baseNotes.find((note) => note.id === noteId)!;
+  const { trigger: updateNote, isMutating: isSaving } = useSWRMutation("/note/id", updateSingleNote, {
+    onSuccess: () => {
+      mutate("/notes");
+      mutate("/notes/pinned");
+      mutate("/notes/archived");
+      mutate("/notes/trashed");
+    }
+  })
 
   const { title, color, type, image, content } = watch();
 
@@ -88,7 +94,8 @@ const TextEditor = ({ noteId }: { noteId: string }) => {
       color: note.color,
       image: note.image,
     });
-  }, []);
+  }, [note.type]);
+
 
   useEffect(() => {
     if (!isDirty) {
@@ -96,33 +103,30 @@ const TextEditor = ({ noteId }: { noteId: string }) => {
     }
 
     const timer = setTimeout(async () => {
-      setIsSaving(true);
       setShowSaving(true);
 
-      await new Promise((resolve) => setTimeout(resolve, 1500));
 
-      updateNote({
-        ...note,
-        title,
-        content,
-        image,
-        type,
-        color,
+      await updateNote({
+        id: note.id, updates: {
+          title,
+          content,
+          image,
+          type,
+          color
+        }
       });
-
-      setIsSaving(false);
 
       await new Promise((resolve) => setTimeout(resolve, 1000));
 
       setShowSaving(false);
-    }, 500);
+    }, 1000);
 
     return () => clearTimeout(timer);
   }, [title, color, content, image, type]);
 
   const handleContentChange = () => {
     if (isSaving) return;
-    
+
     const markdown =
       type === NoteType.LIST
         ? checkListToMarkdown(editor.document)

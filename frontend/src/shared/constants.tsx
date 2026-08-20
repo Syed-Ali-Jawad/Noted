@@ -13,7 +13,9 @@ export const PAGE_ROUTES: Record<string, string> = {
 
 export const EMAIL_PATTERN: RegExp = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-export const MOCK_NOTES: Note[] = [
+export const PASSWORD_PATTERN: RegExp = /^.{8,}$/;
+
+export const MOCK_NOTES: Partial<Note>[] = [
   {
     id: "n8k3m2",
     type: NoteType.TEXT,
@@ -42,7 +44,7 @@ export const MOCK_NOTES: Note[] = [
   },
   {
     id: "r6v9t3",
-    type: NoteType.RICH_TEXT,
+    type: NoteType.RICHTEXT,
     title: "React Interview Prep",
     content:
       "# React Interview Prep\n\n## Core Topics\n\n- Components and props\n- State and lifecycle\n- Hooks\n- Context API\n- Performance optimization\n\n### Important\n\nRemember to explain **why** a particular approach is used, not just how it works.",
@@ -68,7 +70,7 @@ export const MOCK_NOTES: Note[] = [
   },
   {
     id: "z5h1k7",
-    type: NoteType.RICH_TEXT,
+    type: NoteType.RICHTEXT,
     title: "Project Ideas",
     content:
       "## Ideas\n\n### 1. Budget Tracker\n\nA simple personal finance dashboard with income, expenses, categories, and monthly charts.\n\n### 2. Habit Tracker\n\nTrack daily habits and visualize progress over time.\n\n### 3. Bookmark Manager\n\nSave, organize, search, and tag useful links.",
@@ -108,7 +110,7 @@ export const MOCK_NOTES: Note[] = [
   },
   {
     id: "u9f2e6",
-    type: NoteType.RICH_TEXT,
+    type: NoteType.RICHTEXT,
     title: "Trip Planning",
     content:
       "## Things to Prepare\n\n- Book accommodation\n- Check the weather\n- Prepare documents\n- Charge power bank\n\n### Don't Forget\n\nBring a camera and comfortable shoes.",
@@ -123,27 +125,27 @@ export const MOCK_NOTES: Note[] = [
 ];
 
 export const NOTES_COLOR_CLASS_MAP: Record<string, string> = {
-  blue: "bg-[#DDEBFF]",
-  yellow: "bg-[#FFF4CC]",
-  green: "bg-[#DFF7E5]",
-  white: "bg-[#FFFFFF]",
-  purple: "bg-[#EEDCFF]",
+  BLUE: "bg-[#DDEBFF]",
+  YELLOW: "bg-[#FFF4CC]",
+  GREEN: "bg-[#DFF7E5]",
+  WHITE: "bg-[#FFFFFF]",
+  PURPLE: "bg-[#EEDCFF]",
 };
 
 export const NOTES_TRASH_COLOR_CLASS_MAP = {
-  blue: "bg-[#DDEBFF]/60",
-  green: "bg-[#DFF7E5]/60",
-  yellow: "bg-[#FFF4CC]/60",
-  white: "bg-[#FFFFFF]/60",
-  purple: "bg-[#EEDCFF]/60",
+  BLUE: "bg-[#DDEBFF]/60",
+  GREEN: "bg-[#DFF7E5]/60",
+  YELLOW: "bg-[#FFF4CC]/60",
+  WHITE: "bg-[#FFFFFF]/60",
+  PURPLE: "bg-[#EEDCFF]/60",
 };
 
 export const NOTES_ACTION_COLOR_CLASS_MAP: Record<string, string> = {
-  blue: "bg-[#B8D3F7]",
-  yellow: "bg-[#F5E29A]",
-  green: "bg-[#B9E8C5]",
-  white: "bg-[#E8E8E8]",
-  purple: "bg-[#D2B5ED]",
+  BLUE: "bg-[#B8D3F7]",
+  YELLOW: "bg-[#F5E29A]",
+  GREEN: "bg-[#B9E8C5]",
+  WHITE: "bg-[#E8E8E8]",
+  PURPLE: "bg-[#D2B5ED]",
 };
 
 export const SIDEBAR_OPTIONS: SideBarOption[] = [

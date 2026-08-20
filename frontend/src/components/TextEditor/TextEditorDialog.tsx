@@ -1,5 +1,5 @@
 import { Dialog, DialogContent } from "@/ui/dialog";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import TextEditor from "./TextEditor";
 import useNotesStore from "@/store";
 import { PAGE_ROUTES } from "@/shared/constants";
@@ -8,21 +8,28 @@ import { cn } from "@/lib/utils";
 import NoteActions from "../NoteActions";
 import { useLocation } from "react-router-dom";
 import type { Note } from "@/types/notes.type";
+import { mutate } from "swr";
+import useSWRMutation from "swr/mutation";
+import { updateSingleNote } from "@/api/notes.api";
 
 const TextEditorDialog = ({
-  noteId,
+  note,
   onOpenChange,
 }: {
-  noteId: string;
+  note: Note;
   onOpenChange: (val: boolean) => void;
 }) => {
-  const { removeEmptyNotes, notes, pinUnpinNote } = useNotesStore();
   const { pathname } = useLocation();
-
-  const note: Note = notes.find((note) => note.id === noteId)!;
+  const [isPinned, setIsPinned] = useState<boolean>(note.isPinned)
+  const { trigger: pinUnpinNote } = useSWRMutation("/note/id", updateSingleNote, {
+    onSuccess: () => {
+      mutate("/notes/id")
+      mutate("/notes")
+      mutate("/notes/pinned")
+    }
+  })
 
   const handleOpenChange = (val: boolean) => {
-    removeEmptyNotes();
     onOpenChange(val);
   };
 
@@ -47,6 +54,18 @@ const TextEditorDialog = ({
     }
   };
 
+  const handlePinUnpinNote = async () => {
+
+    const newValue = !isPinned
+    await pinUnpinNote({
+      id: note.id, updates: {
+        isPinned: newValue
+      }
+    })
+
+    setIsPinned(newValue)
+  }
+
   return (
     <div>
       <Dialog open onOpenChange={handleOpenChange}>
@@ -55,17 +74,16 @@ const TextEditorDialog = ({
           overlayClasses="backdrop-blur-none bg-black/20"
           showCloseButton={false}
         >
-          <TextEditor noteId={noteId} />
+          <TextEditor note={note} />
           <div className="absolute [&_button]:cursor-pointer [&_button]:text-gray-500 flex gap-x-2 top-3 right-3 shadow-2xl bg-white px-3 py-2 rounded-full">
             <div onClick={noteActionClickHandler}>
-              <NoteActions noteId={noteId} />
+              <NoteActions note={note} />
             </div>
             {pathname === PAGE_ROUTES.notes && (
-              <button>
+              <button onClick={handlePinUnpinNote}>
                 <Pin
                   size={20}
-                  className={cn(note?.isPinned && "text-primary fill-primary")}
-                  onClick={() => pinUnpinNote(noteId)}
+                  className={cn(isPinned && "text-primary fill-primary")}
                 />
               </button>
             )}

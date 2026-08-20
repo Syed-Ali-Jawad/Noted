@@ -1,13 +1,15 @@
 import "../types/express.d.ts";
 import type { Request, Response } from "express"
-import { addANote, dbDeleteNoteById, dbDeleteNotes, dbGetNote, dbGetNoteByArchived, dbGetNoteById, dbGetPinnedNotes, dbGetTrashedNotes, dbUpdateNoteById, dbUpdateNotes } from "../services/notes.service.js"
+import { addANote, dbDeleteNoteById, dbDeleteNotes, dbEmptyTrash, dbGetNote, dbGetNoteByArchived, dbGetNoteById, dbGetPinnedNotes, dbGetTrashedNotes, dbUpdateNoteById, dbUpdateNotes } from "../services/notes.service.js"
 import type { NoteUpdate } from "../types/note.type.js"
+import type { NoteType } from "../generated/prisma/enums.js";
 
 export const createNote = async (req: Request, res: Response) => {
 
-    const note = await addANote(req.userId as string)
+    const { type } = req.body
+    const note = await addANote(req.userId as string, type as NoteType)
 
-    return res.status(201).json({ success: true, noteId: note.id })
+    return res.status(201).json({ success: true, note: note })
 }
 
 export const updateNoteById = async (req: Request, res: Response) => {
@@ -64,14 +66,18 @@ export const updateNotes = async (req: Request, res: Response) => {
 }
 
 export const getNotes = async (req: Request, res: Response) => {
-    const notes = await dbGetNote(req.userId as string)
+    const { search } = req.query
+
+    const notes = await dbGetNote(req.userId as string, search as string | undefined)
+
 
     return res.status(200).json({ success: true, notes })
 }
 
 export const getArchivedNotes = async (req: Request, res: Response) => {
     const userId = req.userId as string
-    const notes = await dbGetNoteByArchived(userId)
+    const { search } = req.query
+    const notes = await dbGetNoteByArchived(userId, search as string | undefined)
 
     return res.status(200).json({ success: true, notes })
 
@@ -79,19 +85,32 @@ export const getArchivedNotes = async (req: Request, res: Response) => {
 
 export const getTrashedNotes = async (req: Request, res: Response) => {
     const userId = req.userId as string;
+    const { search } = req.query
 
-    const notes = await dbGetTrashedNotes(userId)
+    const notes = await dbGetTrashedNotes(userId, search as string | undefined)
 
     return res.status(200).json({ success: true, notes })
 }
 
 export const getPinnedNotes = async (req: Request, res: Response) => {
     const userId = req.userId as string
+    const { search } = req.query
 
-    const notes = await dbGetPinnedNotes(userId)
+    const notes = await dbGetPinnedNotes(userId, search as string | undefined)
 
     res.status(200).json({
         success: true,
         notes
+    })
+}
+
+export const emptyTrash = async (req: Request, res: Response) => {
+    const userId = req.userId as string
+
+    await dbEmptyTrash(userId)
+
+    res.status(200).json({
+        success: true,
+        message: "Trash emptied successfully"
     })
 }

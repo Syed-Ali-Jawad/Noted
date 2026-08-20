@@ -1,5 +1,5 @@
 import { createElement, useEffect, useState } from "react";
-import { Plus, SquareCheck, TextInitial as RichTextIcon } from "lucide-react";
+import { Plus, SquareCheck, TextInitial as RichTextIcon, Loader2 } from "lucide-react";
 import NotesPageLayout from "@/components/NotesPageLayout";
 import NotesView from "@/components/NotesView";
 import TextEditorDialog from "@/components/TextEditor/TextEditorDialog";
@@ -8,26 +8,19 @@ import type { Note } from "@/types/notes.type";
 import { NoteType } from "@/types/enums";
 import { cn } from "@/lib/utils";
 import { NOTE_TYPE_OPTIONS } from "@/shared/text-editor.constant";
+import { createNote, getNotes, getPinnedNotes } from "@/api/notes.api";
+import useSWR, { mutate } from "swr";
 
 const Notes = () => {
   const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
   const [note, setNote] = useState<Note>();
+  const { search } = useNotesStore()
   const [isNoteAddOpen, setIsNoteAddOpen] = useState<boolean>(false);
-  const { notes, addNote, search } = useNotesStore();
+  const { data: notes, isLoading } = useSWR(["/notes", search], ([, search]) => getNotes(search), { onSuccess: () => mutate(["/notes", search]) })
+  const { data: pinnedNotes, isLoading: isPinnedLoading } = useSWR(["/notes/pinned", search], ([, search]) => getPinnedNotes(search), { onSuccess: () => mutate(["/notes/pinned", search]) })
 
-  const baseNotes = search.search ? search.results : notes;
-  const filteredNotes = baseNotes.filter(
-    (note) => note.title || note.content || note.image,
-  );
-
-  const unArchivedNotes = filteredNotes.filter((note) => !note.isArchived);
-
-  const pinnedNotes = unArchivedNotes.filter((note) => note.isPinned);
-
-  const otherNotes = unArchivedNotes.filter((note) => !note.isPinned);
-
-  const handleAddNote = (type: NoteType) => {
-    const note = addNote(type);
+  const handleAddNote = async (type: NoteType) => {
+    const note = await createNote(type);
     setNote(note);
     setIsDialogOpen(true);
     setIsNoteAddOpen(false);
@@ -52,18 +45,19 @@ const Notes = () => {
               <button onClick={() => handleAddNote(NoteType.LIST)}>
                 <SquareCheck size={22} />
               </button>
-              <button onClick={() => handleAddNote(NoteType.RICH_TEXT)}>
+              <button onClick={() => handleAddNote(NoteType.RICHTEXT)}>
                 <RichTextIcon size={20} />
               </button>
             </div>
           </div>
 
           <div className="flex flex-col gap-y-10">
-            {pinnedNotes.length > 0 && <NotesView notes={pinnedNotes} />}
-            {otherNotes.length > 0 && (
-              <NotesView notes={otherNotes} title="other notes" />
+            {(pinnedNotes || []).length > 0 && <NotesView notes={pinnedNotes || []} />}
+            {(notes || []).length > 0 && (
+              <NotesView notes={notes || []} title="other notes" />
             )}
-            {unArchivedNotes.length === 0 && <p>No items</p>}
+            {isLoading && <Loader2 className="animate-spin mx-auto size-40 aspect-square text-gray-400 stroke-1" />}
+            {(notes?.length === 0 && pinnedNotes?.length === 0) && <p>No items</p>}
           </div>
           <div
             className={cn(
@@ -97,7 +91,7 @@ const Notes = () => {
         </div>
       </NotesPageLayout>
       {isDialogOpen && (
-        <TextEditorDialog onOpenChange={setIsDialogOpen} noteId={note?.id!} />
+        <TextEditorDialog onOpenChange={setIsDialogOpen} note={note!} />
       )}
     </>
   );

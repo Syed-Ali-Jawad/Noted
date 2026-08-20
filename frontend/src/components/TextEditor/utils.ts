@@ -13,14 +13,14 @@ import type { Block } from "@blocknote/core";
 export const getSchema = (type: NoteType) =>
   type === NoteType.LIST
     ? CHECKLIST_SCHEMA
-    : type === NoteType.RICH_TEXT
+    : type === NoteType.RICHTEXT
       ? RICHTEXT_SCHEMA
       : TEXT_SCHEMA;
 
 export const getInitialContent = (type: NoteType) =>
   type === NoteType.LIST
     ? CHECKLIST_INITIAL_CONTENT
-    : type === NoteType.RICH_TEXT
+    : type === NoteType.RICHTEXT
       ? RICHTEXT_INITIAL_CONTENT
       : TEXT_INITIAL_CONTENT;
 

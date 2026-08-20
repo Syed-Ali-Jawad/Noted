@@ -2,8 +2,8 @@ import bcrypt from "bcryptjs"
 import { AppError } from "../errors/AppError.js"
 import { prisma } from "../lib/prisma.js"
 import { signToken } from "../lib/jwt.js"
-import { EMAIL_REGEX } from "../constants/common.constant.js"
-import { Prisma } from "../generated/prisma/client.js"
+import { DEFAULT_NOTES, EMAIL_REGEX } from "../constants/common.constant.js"
+import { Prisma, type Note } from "../generated/prisma/client.js"
 
 export const login = async (email: string, password: string) => {
 
@@ -54,6 +54,8 @@ export const registerUser = async (name: string, email: string, password: string
 
     const hashedPassword = await bcrypt.hash(password, 12)
 
+
+
     try {
         const user = await prisma.user.create({
             data: {
@@ -67,6 +69,16 @@ export const registerUser = async (name: string, email: string, password: string
                 email: true
             }
         })
+
+        const notes = DEFAULT_NOTES.map(note => ({
+            ...note,
+            userId: user.id,
+        })) as Note[]
+
+        await prisma.note.createMany({
+            data: notes,
+        });
+
         return user
     }
     catch (error) {
@@ -78,4 +90,6 @@ export const registerUser = async (name: string, email: string, password: string
         }
         throw error;
     }
+
+
 }

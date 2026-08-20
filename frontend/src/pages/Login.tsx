@@ -1,12 +1,15 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import PasswordInput from "../components/form-field/PasswordInput";
 import Logo from "../assets/logo.svg";
 import { useForm } from "react-hook-form";
 import type { LoginForm } from "../types/forms.type";
 import FieldInput from "@/components/form-field/FieldInput";
 import GradientPage from "@/components/GradientPage";
-import { EMAIL_PATTERN } from "@/shared/constants";
+import { EMAIL_PATTERN, PASSWORD_PATTERN } from "@/shared/constants";
 import Button from "@/ui/custom-button";
+import { login } from "@/api/auth.api";
+import useSWRMutation from "swr/mutation";
+import { Loader2 } from "lucide-react";
 
 const defaultValues: LoginForm = {
   email: "",
@@ -21,8 +24,13 @@ const Login = () => {
     formState: { errors },
   } = useForm<LoginForm>({ defaultValues });
 
-  const onSubmit = (data: LoginForm) => {
-    console.table(data);
+  const navigate = useNavigate()
+
+  const { trigger: signIn, isMutating: isSigningIn, error } = useSWRMutation("/login", login, { onSuccess: () => navigate("/") })
+
+  const onSubmit = async (data: LoginForm) => {
+    await signIn(data)
+
   };
 
   return (
@@ -54,11 +62,11 @@ const Login = () => {
               error={errors.email}
             />
             <PasswordInput
-              {...register("password", { required: "Password is required" })}
+              {...register("password", { required: "Password is required", pattern: { value: PASSWORD_PATTERN, message: "Password must be atleast 8 characters long." } })}
               error={errors.password}
             />
           </div>
-          <div className="flex justify-between w-full">
+          {/* <div className="flex justify-between w-full">
             <div className="flex gap-x-3 items-center ">
               <input
                 type="checkbox"
@@ -76,8 +84,11 @@ const Login = () => {
             <Link to="#" className="text-primary hover:opacity-90">
               Forgot Password?
             </Link>
+          </div> */}
+
+          <div className="flex flex-col gap-y-2 w-full items-center"><Button className="flex gap-x-2 items-center justify-center" disabled={isSigningIn}>{isSigningIn && <Loader2 className="animate-spin" />}<span>Sign In</span></Button>
+            {error && <p className="text-primary text-xs">{error?.response?.data?.message}</p>}
           </div>
-          <Button>Sign In</Button>
           <p>
             Don't have an account?{" "}
             <Link

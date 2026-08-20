@@ -17,13 +17,16 @@ import { checkListToMarkdown } from "./TextEditor/utils";
 import { ColorSelect } from "./TextEditor/Toolbar";
 import NoteActions from "./NoteActions";
 import useEditor from "@/hooks/useEditor";
+import { mutate } from "swr";
+import { updateSingleNote } from "@/api/notes.api";
+import useSWRMutation from "swr/mutation";
 
 const NoteCard = ({
   note,
-  setOpenedNoteId,
+  setOpenedNote,
 }: {
   note: Note;
-  setOpenedNoteId: (id: string) => void;
+  setOpenedNote: (note: Note) => void;
 }) => {
   const { title, image, color, type, content } = note;
   const { pathname } = useLocation();
@@ -37,12 +40,19 @@ const NoteCard = ({
   const isTrashPage = pathname === PAGE_ROUTES.trash;
   const isNotesPage = pathname === PAGE_ROUTES.notes;
 
+  const { trigger: updateNoteById } = useSWRMutation("/note/id", updateSingleNote, {
+    onSuccess: () => {
+      mutate("/notes");
+      mutate("/notes/pinned");
+      mutate("/notes/archived");
+      mutate("/notes/trashed");
+    }
+  })
+
   const {
     selectedNotes,
     selectNote,
     unselectNote,
-    pinUnpinNote,
-    updateNote,
     mobileSelectAllow,
   } = useNotesStore();
 
@@ -59,39 +69,27 @@ const NoteCard = ({
     unselectNote(note.id);
   };
 
-  const handleContentChange = () => {
-    if (note.type !== NoteType.LIST) {
-      return;
-    }
-
-    const markdown = checkListToMarkdown(editor.document);
-
-    updateNote({ ...note, content: markdown });
-  };
-
   const handleColorChange = (color: NoteColor) => {
-    updateNote({ ...note, color });
+    updateNoteById({ id: note.id, updates: { color } });
   };
 
-  const handleNoteOpen = (e: React.MouseEvent<HTMLDivElement>) => {
-    const element = e.target as HTMLElement;
-    if (element instanceof HTMLInputElement && element.type === "checkbox") {
-      return;
-    }
-    setOpenedNoteId(note.id);
+
+
+  const handlePinUnpin = () => {
+    updateNoteById({ id: note.id, updates: { isPinned: !note.isPinned } });
   };
 
   return (
     <>
       <div
         className={cn(
-          "md:min-w-55 h-fit p-3 md:p-6 relative rounded-xl max-w-100 group  cursor-pointer transition-all duration-300",
+          "md:min-w-55 h-fit p-3 md:p-6 md:pb-10 relative rounded-xl max-w-100 group  cursor-pointer transition-all duration-300",
           isTrashPage
             ? NOTES_TRASH_COLOR_CLASS_MAP[color]
             : NOTES_COLOR_CLASS_MAP[color],
         )}
       >
-        <div onClick={handleNoteOpen}>
+        <div onClick={() => setOpenedNote(note)}>
           {image && (
             <img
               src={image}
@@ -100,16 +98,15 @@ const NoteCard = ({
             />
           )}
           <p className="text-xl font-bold mb-2">{title}</p>
-          <div className="note-view">
+          <div className="note-view" onClick={(e) => setOpenedNote(note)}>
             <BlockNoteView
               editor={editor}
-              editable={note.type === NoteType.LIST}
+              editable={false}
               sideMenu={false}
               formattingToolbar={false}
               className="max-h-87.5 overflow-hidden"
               slashMenu={false}
               theme="light"
-              onChange={handleContentChange}
             />
           </div>
         </div>
@@ -124,7 +121,7 @@ const NoteCard = ({
             handleSelect={handleColorChange}
             className="[&_button]:px-0"
           />
-          <NoteActions noteId={note.id} />
+          <NoteActions note={note} />
         </div>
         {isNotesPage && (
           <button
@@ -132,7 +129,7 @@ const NoteCard = ({
               "absolute top-0 cursor-pointer  right-0 p-3  opacity-0 group-hover:opacity-100",
               note.isPinned && "opacity-100",
             )}
-            onClick={() => pinUnpinNote(note.id)}
+            onClick={handlePinUnpin}
           >
             <Pin
               className={cn(

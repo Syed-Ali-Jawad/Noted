@@ -7,10 +7,7 @@ import { MASONARY_BREAKPOINT_COLUMNS } from "@/shared/constants";
 
 
 const NotesView = ({ notes, title }: { notes: Note[]; title?: string }) => {
-  const [openedNoteId, setOpenedNoteId] = useState<string>("");
-  const sortedNotes = notes.sort(
-    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
-  );
+  const [openedNote, setOpenedNote] = useState<Note>();
 
   return (
     <>
@@ -25,19 +22,19 @@ const NotesView = ({ notes, title }: { notes: Note[]; title?: string }) => {
           className="flex gap-4"
           columnClassName="flex flex-col gap-4"
         >
-          {sortedNotes.map((note) => (
+          {notes.map((note) => (
             <NoteCard
               note={note}
               key={note.title}
-              setOpenedNoteId={setOpenedNoteId}
+              setOpenedNote={setOpenedNote}
             />
           ))}
         </Masonry>
       </div>
-      {openedNoteId && (
+      {openedNote && (
         <TextEditorDialog
-          onOpenChange={() => setOpenedNoteId("")}
-          noteId={openedNoteId}
+          onOpenChange={() => setOpenedNote(null)}
+          note={openedNote}
         />
       )}
     </>

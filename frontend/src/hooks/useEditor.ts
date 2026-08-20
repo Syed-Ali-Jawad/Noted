@@ -20,6 +20,7 @@ const useEditor = ({ type, content, placeholder, isContentView = false }: { type
     const dependency = [editor, ...(isContentView ? [content] : [])]
 
     useEffect(() => {
+        if (!content) return;
         const blocks =
             type === NoteType.LIST
                 ? parseChecklist(content)
