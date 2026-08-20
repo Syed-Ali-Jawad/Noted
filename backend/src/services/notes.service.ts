@@ -51,6 +51,7 @@ export const dbUpdateNoteById = async (id: string, userId: string, requestBody: 
             isPinned: true,
             isTrashed: true,
             color: true,
+            type: true,
         }
     })
 
@@ -121,7 +122,8 @@ export const dbUpdateNotes = async (ids: string[], userId: string, isArchived: b
             isTrashed: true,
             color: true,
             title: true,
-            content: true
+            content: true,
+            type: true
         }
     })
 
@@ -214,7 +216,6 @@ export const dbGetTrashedNotes = async (userId: string, search?: string) => {
 
 export const dbGetPinnedNotes = async (userId: string, search?: string) => {
     if (!userId) throw new AppError(400, "User id is required");
-    console.log("SEARCH IN DB FUNCTION:", search);
     const notes = await prisma.note.findMany({
         where: {
             userId,
@@ -234,6 +235,7 @@ export const dbGetPinnedNotes = async (userId: string, search?: string) => {
             isPinned: true,
             isTrashed: true,
             color: true,
+            type: true,
         }
     })
     return notes;

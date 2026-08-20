@@ -1,5 +1,6 @@
 import { toast as uiToast } from "@/ui/toast";
 import { clsx, type ClassValue } from "clsx";
+import { mutate } from "swr";
 import { twMerge } from "tailwind-merge";
 
 export function cn(...inputs: ClassValue[]) {
@@ -23,3 +24,14 @@ export const toast = ({
     },
   });
 };
+
+
+export const revalidate = async (...paths: string[]) =>
+  Promise.all(
+    paths.map((path) =>
+      mutate((key) =>
+        key === path ||
+        (Array.isArray(key) && key[0] === path)
+      )
+    )
+  );

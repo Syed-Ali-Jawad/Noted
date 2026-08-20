@@ -6,7 +6,7 @@ import { Input } from "@/ui/input";
 import CustomToolbar from "./Toolbar";
 import { FormProvider, useForm } from "react-hook-form";
 import { NoteType } from "@/types/enums";
-import { cn } from "@/lib/utils";
+import { cn, revalidate } from "@/lib/utils";
 import { NOTES_COLOR_CLASS_MAP } from "@/shared/constants";
 import type { Note } from "@/types/notes.type";
 import { useEffect, useState } from "react";
@@ -15,7 +15,6 @@ import {
 } from "./utils";
 import useEditor from "@/hooks/useEditor";
 import useSWRMutation from "swr/mutation";
-import { mutate } from "swr";
 import { updateSingleNote } from "@/api/notes.api";
 
 const defaultValues: Note = {
@@ -51,10 +50,7 @@ const TextEditor = ({ note }: { note: Note }) => {
 
   const { trigger: updateNote, isMutating: isSaving } = useSWRMutation("/note/id", updateSingleNote, {
     onSuccess: () => {
-      mutate("/notes");
-      mutate("/notes/pinned");
-      mutate("/notes/archived");
-      mutate("/notes/trashed");
+      revalidate("/notes", "/notes/pinned", "/notes/archived", "/notes/trashed")
     }
   })
 

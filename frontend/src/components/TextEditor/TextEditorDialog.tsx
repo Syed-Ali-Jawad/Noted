@@ -3,11 +3,10 @@ import { useEffect, useState } from "react";
 import TextEditor from "./TextEditor";
 import { PAGE_ROUTES } from "@/shared/constants";
 import { Pin, X } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn, revalidate } from "@/lib/utils";
 import NoteActions from "../NoteActions";
 import { useLocation } from "react-router-dom";
 import type { Note } from "@/types/notes.type";
-import { mutate } from "swr";
 import useSWRMutation from "swr/mutation";
 import { updateSingleNote } from "@/api/notes.api";
 
@@ -22,9 +21,7 @@ const TextEditorDialog = ({
   const [isPinned, setIsPinned] = useState<boolean>(note.isPinned)
   const { trigger: pinUnpinNote } = useSWRMutation("/note/id", updateSingleNote, {
     onSuccess: () => {
-      mutate("/notes/id")
-      mutate("/notes")
-      mutate("/notes/pinned")
+      revalidate("/notes/id", "/notes", "/notes/pinned")
     }
   })
 

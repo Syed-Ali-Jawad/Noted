@@ -25,7 +25,7 @@ const NotesView = ({ notes, title }: { notes: Note[]; title?: string }) => {
           {notes.map((note) => (
             <NoteCard
               note={note}
-              key={note.title}
+              key={note.id}
               setOpenedNote={setOpenedNote}
             />
           ))}

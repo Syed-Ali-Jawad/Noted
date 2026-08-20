@@ -9,15 +9,15 @@ import { NoteType } from "@/types/enums";
 import { cn } from "@/lib/utils";
 import { NOTE_TYPE_OPTIONS } from "@/shared/text-editor.constant";
 import { createNote, getNotes, getPinnedNotes } from "@/api/notes.api";
-import useSWR, { mutate } from "swr";
+import useSWR from "swr";
 
 const Notes = () => {
   const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
   const [note, setNote] = useState<Note>();
   const { search } = useNotesStore()
   const [isNoteAddOpen, setIsNoteAddOpen] = useState<boolean>(false);
-  const { data: notes, isLoading } = useSWR(["/notes", search], ([, search]) => getNotes(search), { onSuccess: () => mutate(["/notes", search]) })
-  const { data: pinnedNotes, isLoading: isPinnedLoading } = useSWR(["/notes/pinned", search], ([, search]) => getPinnedNotes(search), { onSuccess: () => mutate(["/notes/pinned", search]) })
+  const { data: notes, isLoading } = useSWR(["/notes", search], ([, search]) => getNotes(search))
+  const { data: pinnedNotes, isLoading: isPinnedLoading } = useSWR(["/notes/pinned", search], ([, search]) => getPinnedNotes(search))
 
   const handleAddNote = async (type: NoteType) => {
     const note = await createNote(type);

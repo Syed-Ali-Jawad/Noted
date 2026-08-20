@@ -1,5 +1,5 @@
 import { deleteNotes, deleteSingleNote, updateNotes, updateSingleNote } from "@/api/notes.api";
-import { cn, toast } from "@/lib/utils";
+import { cn, revalidate, toast } from "@/lib/utils";
 import { PAGE_ROUTES } from "@/shared/constants";
 import Icons from "@/shared/icons";
 import useNotesStore from "@/store";
@@ -7,7 +7,6 @@ import type { Note } from "@/types/notes.type";
 import { Archive, ArchiveRestore, Loader2, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { useLocation } from "react-router-dom";
-import { mutate } from "swr";
 import useSWRMutation from "swr/mutation";
 
 const NoteActions = ({
@@ -30,24 +29,16 @@ const NoteActions = ({
 
   const [bulkApiRunning, setBulkApiRunning] = useState<string>()
 
+
   const { trigger: updateNoteById } = useSWRMutation("/note/id", updateSingleNote, {
-    onSuccess: () => {
-      mutate("/notes");
-      mutate("/notes/pinned");
-      mutate("/notes/archived");
-      mutate("/notes/trashed");
-    }
+    onSuccess: () => revalidate("/notes", "/notes/pinned", "/notes/archived", "/notes/trashed")
   })
 
   const { trigger: updateNotesBulk } = useSWRMutation("/notes", updateNotes, {
     onSuccess: async () => {
-      await Promise.all([
-        mutate("/notes"),
-        mutate("/notes/pinned"),
-        mutate("/notes/archived"),
-        mutate("/notes/trashed")
-      ]);
+      await revalidate("/notes", "/notes/pinned", "/notes/archived", "/notes/trashed");
       resetNotesSelection()
+      setBulkApiRunning("")
     }
   })
 
@@ -71,7 +62,7 @@ const NoteActions = ({
       } else if (selectedNotes.length > 0) {
         await deleteNotes({ arg: selectedNotes })
       }
-      mutate(`/notes/trashed`)
+      await revalidate("/notes/trashed")
       showToast("deleted permenantly");
       return;
     }
@@ -100,7 +91,7 @@ const NoteActions = ({
       await updateNoteById({ id: note.id, updates: { isTrashed: false, isArchived: false } });
     } else if (selectedNotes.length > 0) {
       setBulkApiRunning("restore-trash")
-      await updateNotesBulk({ ids: selectedNotes, updates: { isTrashed: false, isArchived: false } })
+      await updateNotesBulk({ ids: selectedNotes, updates: { isTrashed: false, isArchived: false, isPinned: false } })
     }
     showToast("restored");
   };

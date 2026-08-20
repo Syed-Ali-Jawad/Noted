@@ -1,4 +1,4 @@
-import { cn } from "@/lib/utils";
+import { cn, revalidate } from "@/lib/utils";
 import {
   NOTES_ACTION_COLOR_CLASS_MAP,
   NOTES_COLOR_CLASS_MAP,
@@ -15,7 +15,6 @@ import "./TextEditor/editor.css";
 import { ColorSelect } from "./TextEditor/Toolbar";
 import NoteActions from "./NoteActions";
 import useEditor from "@/hooks/useEditor";
-import { mutate } from "swr";
 import { updateSingleNote } from "@/api/notes.api";
 import useSWRMutation from "swr/mutation";
 
@@ -40,10 +39,7 @@ const NoteCard = ({
 
   const { trigger: updateNoteById } = useSWRMutation("/note/id", updateSingleNote, {
     onSuccess: () => {
-      mutate("/notes");
-      mutate("/notes/pinned");
-      mutate("/notes/archived");
-      mutate("/notes/trashed");
+      revalidate("/notes", "/notes/pinned", "/notes/archived", "/notes/trashed")
     }
   })
 

@@ -3,12 +3,12 @@ import NotesView from "@/components/NotesView";
 import useNotesStore from "@/store";
 import { useEffect } from "react";
 import { getTrashedNotes } from "@/api/notes.api";
-import useSWR, { mutate } from "swr";
+import useSWR from "swr";
 import { Loader2 } from "lucide-react";
 
 const TrashNotes = () => {
   const { search } = useNotesStore();
-  const { data: notes, isLoading } = useSWR(["/notes/trashed", search], ([, search]) => getTrashedNotes(search), { onSuccess: () => mutate(["/notes/trashed", search]) })
+  const { data: notes, isLoading } = useSWR(["/notes/trashed", search], ([, search]) => getTrashedNotes(search))
 
   useEffect(() => {
     scrollTo(0, 0);

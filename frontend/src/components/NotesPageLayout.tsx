@@ -142,7 +142,6 @@ const DesktopTopbar = ({
         )}
         {selectedNotes.length > 0 && (
           <NoteActions className="flex gap-x-4" showLabels />
-
         )}
 
         {/* <Avatar /> */}

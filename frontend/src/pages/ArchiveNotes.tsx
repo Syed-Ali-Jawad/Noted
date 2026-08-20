@@ -3,14 +3,12 @@ import NotesView from "@/components/NotesView";
 import useNotesStore from "@/store";
 import { useEffect } from "react";
 import { getArchivedNotes } from "@/api/notes.api";
-import useSWR, { mutate } from "swr";
+import useSWR from "swr";
 import { Loader2 } from "lucide-react";
 
 const ArchiveNotes = () => {
   const { search } = useNotesStore();
-  const { data: notes, isLoading } = useSWR(["/notes/archived", search], ([, search]) => getArchivedNotes(search), {
-    onSuccess: () => mutate(["/notes/archived", search])
-  })
+  const { data: notes, isLoading } = useSWR(["/notes/archived", search], ([, search]) => getArchivedNotes(search))
 
 
   useEffect(() => {
