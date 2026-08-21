@@ -32,16 +32,32 @@ const TextEditorDialog = ({
   useEffect(() => {
     const html = document.documentElement;
 
-    const observer = new MutationObserver(() => {
+    const isMobileView = window.innerWidth <= 640;
+
+    const removeScrollbarGutter = () => {
       html.style.removeProperty("scrollbar-gutter");
-    });
+    };
+
+    // Remove anything already there
+    removeScrollbarGutter();
+
+    const observer = new MutationObserver(removeScrollbarGutter);
 
     observer.observe(html, {
       attributes: true,
       attributeFilter: ["style"],
     });
 
-    return () => observer.disconnect();
+    const handlePopState = () => {
+      handleOpenChange(false);
+    };
+
+    if (isMobileView) {
+      window.history.pushState({ editor: true }, "");
+      window.addEventListener("popstate", handlePopState);
+    }
+
+    return () => { observer.disconnect(); if (isMobileView) window.removeEventListener("popstate", handlePopState); };
   }, []);
 
   const noteActionClickHandler = (e: React.MouseEvent) => {
@@ -83,7 +99,7 @@ const TextEditorDialog = ({
                 />
               </button>
             )}
-            <button onClick={() => handleOpenChange(false)}>
+            <button onClick={() => handleOpenChange(false)} className="hidden sm:block">
               <X size={18} />
             </button>
           </div>
