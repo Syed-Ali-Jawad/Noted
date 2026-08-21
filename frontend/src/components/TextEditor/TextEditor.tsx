@@ -9,7 +9,7 @@ import { NoteType } from "@/types/enums";
 import { cn, revalidate } from "@/lib/utils";
 import { NOTES_COLOR_CLASS_MAP } from "@/shared/constants";
 import type { Note } from "@/types/notes.type";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   checkListToMarkdown,
 } from "./utils";
@@ -34,6 +34,7 @@ const defaultValues: Note = {
 const TextEditor = ({ note }: { note: Note }) => {
   const [showSaving, setShowSaving] = useState<boolean>(false);
   const [imageUrl, setImageUrl] = useState<string | null>(null);
+  const editorRef = useRef<HTMLDivElement>(null);
 
 
   const form = useForm<Note>({
@@ -113,10 +114,41 @@ const TextEditor = ({ note }: { note: Note }) => {
       await new Promise((resolve) => setTimeout(resolve, 1000));
 
       setShowSaving(false);
-    }, 1000);
+    }, 800);
 
     return () => clearTimeout(timer);
   }, [title, color, content, image, type]);
+
+  useEffect(() => {
+    const element = editorRef.current;
+    if (!element) return;
+
+    const handleBeforeInput = (e: InputEvent) => {
+      // Intercept Android Chrome paragraph breaks
+      if (window.innerWidth < 640 && (e.inputType === "insertParagraph" || e.inputType === "insertLineBreak")) {
+
+
+        // Prevent Chrome from firing its default blank space character
+        e.preventDefault();
+        e.stopImmediatePropagation();
+
+        // Safely access the underlying TipTap/ProseMirror view using type assertion
+        const tiptapInstance = (editor as any)._tiptapEditor;
+        if (tiptapInstance && tiptapInstance.view) {
+          const view = tiptapInstance.view;
+          const { state, dispatch } = view;
+
+          // Programmatically split the block exactly at the cursor selection
+          dispatch(state.tr.split(state.selection.from));
+        }
+
+      }
+    };
+
+    // Use capture phase (true) to intercept the event before BlockNote rules apply
+    element.addEventListener("beforeinput", handleBeforeInput, true);
+    return () => element.removeEventListener("beforeinput", handleBeforeInput, true);
+  }, [editor]);
 
   const handleContentChange = () => {
     if (isSaving) return;
@@ -176,7 +208,7 @@ const TextEditor = ({ note }: { note: Note }) => {
             {...register("title")}
           />
 
-          <div className="note-editor min-w-0 w-full max-w-full mt-2 [&_.bn-editor]:min-h-[50dvh]! [&_.bn-editor]:lg:min-h-20! [&_.bn-editor]:px-3! [&_.bn-editor]:max-w-full [&_.bn-editor]:min-w-0">
+          <div ref={editorRef} className="note-editor min-w-0 w-full max-w-full mt-2 [&_.bn-editor]:min-h-[50dvh]! [&_.bn-editor]:lg:min-h-20! [&_.bn-editor]:px-3! [&_.bn-editor]:max-w-full [&_.bn-editor]:min-w-0">
             <BlockNoteView
               editor={editor}
               formattingToolbar={false}
