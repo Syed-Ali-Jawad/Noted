@@ -26,6 +26,9 @@ const CustomToolbar = ({
   showSaving: boolean;
 }) => {
   const { setValue } = useFormContext();
+  const [keyboardOffset, setKeyboardOffset] = useState(0);
+
+
 
   const color = useWatch({
     name: "color",
@@ -45,8 +48,35 @@ const CustomToolbar = ({
   //   });
   // };
 
+  useEffect(() => {
+    const viewport = window.visualViewport;
+
+    if (!viewport) return;
+
+    const updateKeyboardOffset = () => {
+      const offset = Math.max(
+        0,
+        window.innerHeight - viewport.height - viewport.offsetTop,
+      );
+
+      setKeyboardOffset(offset);
+    };
+
+    updateKeyboardOffset();
+
+    viewport.addEventListener("resize", updateKeyboardOffset);
+    viewport.addEventListener("scroll", updateKeyboardOffset);
+
+    return () => {
+      viewport.removeEventListener("resize", updateKeyboardOffset);
+      viewport.removeEventListener("scroll", updateKeyboardOffset);
+    };
+  }, []);
+
   return (
-    <div className="sticky sm:absolute  bg-white sm:bg-[unset]  max-w-screen sm:max-w-[unset] bottom-0 sm:bottom-3 sm:left-1/2 sm:-translate-x-1/2 w-full sm:w-[95%] h-9">
+    <div className="fixed sm:absolute  bg-white sm:bg-[unset]  max-w-screen sm:max-w-[unset] bottom-0 sm:bottom-3 sm:left-1/2 sm:-translate-x-1/2 w-full sm:w-[95%] h-9" style={window.innerWidth > 640 ? {} : {
+      bottom: keyboardOffset,
+    }}>
       <FormattingToolbar>
         <div className="flex w-full pr-3 items-center justify-between">
           <div className="flex gap-x-1 items-center">
