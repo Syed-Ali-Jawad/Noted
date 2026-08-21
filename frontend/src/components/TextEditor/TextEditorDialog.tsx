@@ -87,14 +87,14 @@ const TextEditorDialog = ({
           showCloseButton={false}
         >
           <TextEditor note={note} />
-          <div className="absolute [&_button]:cursor-pointer [&_button]:text-gray-500 flex gap-x-2 top-3 right-3 shadow-2xl bg-white px-3 py-2 rounded-full">
+          <div className="absolute [&_button]:cursor-pointer [&_button]:text-gray-500 flex gap-x-2.5 sm:gap-x-2 top-3 right-3 shadow-2xl bg-white px-3 py-2 rounded-full">
             <div onClick={noteActionClickHandler}>
-              <NoteActions note={note} />
+              <NoteActions note={note} className="gap-x-2.5 sm:gap-x-2" />
             </div>
             {pathname === PAGE_ROUTES.notes && (
               <button onClick={handlePinUnpinNote}>
                 <Pin
-                  size={20}
+                  size={18}
                   className={cn(isPinned && "text-primary fill-primary")}
                 />
               </button>
