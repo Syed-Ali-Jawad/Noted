@@ -158,11 +158,11 @@ const TextEditor = ({ note }: { note: Note }) => {
     <FormProvider {...form}>
       <div
         className={cn(
-          "min-w-0 w-full max-w-full rounded-xl sm:pb-15 relative",
+          "min-w-0 w-full max-w-full  rounded-xl sm:pb-15 relative",
           NOTES_COLOR_CLASS_MAP[color],
         )}
       >
-        <div className="min-w-0 w-full max-w-full flex flex-col p-3 pt-6 pb-0 px-0 sm:px-3 max-h-[calc(100dvh-0.5rem)] sm:max-h-[calc(100vh-11rem)] box-border overflow-auto scrollbar">
+        <div className="min-w-0 w-full max-w-full flex flex-col p-3 pt-6 pb-0 px-0 sm:px-3 h-full max-h-[calc(100dvh-0.5rem)] sm:h-auto sm:max-h-[calc(100vh-11rem)] box-border overflow-auto scrollbar">
           {imageUrl && (
             <img
               src={imageUrl}

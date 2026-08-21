@@ -66,7 +66,7 @@ const TextEditorDialog = ({
     <div>
       <Dialog open onOpenChange={handleOpenChange}>
         <DialogContent
-          className="bg-white ring-0 p-0 sm:min-w-150 sm:h-auto   top-0 sm:top-1/2 translate-y-0 sm:-translate-y-1/2  max-h-dvh max-w-[unset] sm:w-100 sm:max-w-[calc(100%-2rem)]"
+          className="bg-white ring-0 p-0 sm:min-w-150 sm:h-auto top-0 sm:top-1/2 translate-y-0 sm:-translate-y-1/2  max-h-dvh h-full  max-w-[unset] sm:w-100 sm:max-w-[calc(100%-2rem)]"
           overlayClasses="backdrop-blur-none bg-black/20"
           showCloseButton={false}
         >
