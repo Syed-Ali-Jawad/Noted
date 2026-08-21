@@ -62,20 +62,29 @@ const Notes = () => {
           </div>
           <div
             className={cn(
-              "bg-primary shadow-[0_0_10px_2px_rgba(0,0,0,0.25)] sm:max-w-md max-w-[unset] text-white rounded-full transition-all ease-in sm:duration-500 duration-300 w-14 h-14 px-4 flex items-center justify-center fixed bottom-8 sm:right-8 right-4",
-              isNoteAddOpen && "w-[calc(100%-32px)] sm:w-full justify-between",
+              "bg-primary shadow-[0_0_10px_2px_rgba(0,0,0,0.25)] sm:max-w-sm max-w-[unset] text-white rounded-full transition-all  sm:duration-500 duration-300 w-14 h-14 px-4 flex items-center justify-center fixed bottom-8 sm:right-8 right-4",
+              isNoteAddOpen && "w-[calc(100%-32px)] sm:w-full",
             )}
           >
-            {isNoteAddOpen &&
-              NOTE_TYPE_OPTIONS.map((option) => (
-                <button
-                  className="flex gap-x-2 items-center cursor-pointer hover:bg-white/20 sm:px-4 py-2 rounded-full transition-all duration-300"
-                  onClick={() => handleAddNote(option.value)}
-                >
-                  {createElement(option.icon, { size: 20 })}
-                  <span>{option.label}</span>
-                </button>
-              ))}
+            <div
+              className={cn(
+                "flex-1 min-w-0 flex items-center justify-evenly sm:justify-center opacity-0 transition-opacity duration-500",
+                isNoteAddOpen && "opacity-100",
+              )}
+            >
+              {isNoteAddOpen &&
+                NOTE_TYPE_OPTIONS.map((option) => (
+                  <button
+                    key={option.value}
+                    className="flex shrink-0 gap-x-1 items-center cursor-pointer hover:bg-white/20 sm:px-4 py-2 rounded-full transition-all duration-300"
+                    onClick={() => handleAddNote(option.value)}
+                  >
+                    {createElement(option.icon, { size: 20 })}
+                    <span>{option.label}</span>
+                  </button>
+                ))}
+            </div>
+
             <button
               type="button"
               className="shrink-0 size-8 flex items-center justify-center cursor-pointer"

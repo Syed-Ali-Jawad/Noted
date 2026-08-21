@@ -202,6 +202,11 @@ const MobileTopBar = ({
     navigate('/login')
   }
 
+  const handleClickChevron = () => {
+    resetNotesSelection()
+    toggleMobileSelectAllow()
+  }
+
   return (
     <div className="relative block lg:hidden ">
       {/* Top bar */}
@@ -329,7 +334,7 @@ const MobileTopBar = ({
       ) : (
         <div className="w-full bg-white text-gray-700 h-17 p-4 shadow-md flex justify-between items-center">
           <div className="flex gap-x-0.5 items-center font-semibold text-lg">
-            <button onClick={resetNotesSelection}>
+            <button onClick={handleClickChevron}>
               <ChevronLeft />
             </button>
             <p>
