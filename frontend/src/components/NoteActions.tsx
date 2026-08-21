@@ -13,10 +13,12 @@ const NoteActions = ({
   showLabels,
   note,
   className,
+  iconSize = 18,
 }: {
   showLabels?: boolean;
   note?: Note;
   className?: string;
+  iconSize?: number;
 }) => {
   const { pathname } = useLocation();
   const {
@@ -112,7 +114,7 @@ const NoteActions = ({
           className="cursor-pointer"
           onClick={restoreTrash}
         >
-          {showLabels ? <span className="inline-flex items-center gap-x-2">{bulkApiRunning === "restore-trash" && <ActionLoader />}Restore</span> : <Icons.RestoreFromTrash size={20} />}
+          {showLabels ? <span className="inline-flex items-center gap-x-2">{bulkApiRunning === "restore-trash" && <ActionLoader />}Restore</span> : <Icons.RestoreFromTrash size={iconSize + 2} />}
         </button>
       )}
       <button
@@ -122,7 +124,7 @@ const NoteActions = ({
         {showLabels ? (
           <span className="inline-flex items-center gap-x-2">{(bulkApiRunning === "move-to-trash" && !isTrashPage) && <ActionLoader />}Delete</span>
         ) : (
-          <Trash2 size={18} className="cursor-pointer" />
+          <Trash2 size={iconSize} className="cursor-pointer" />
         )}
       </button>
     </div>
@@ -131,11 +133,11 @@ const NoteActions = ({
 
 export default NoteActions;
 
-const getArchiveButton = (isArchivePage: boolean, showLabels: boolean) => {
+const getArchiveButton = (isArchivePage: boolean, showLabels: boolean, iconSize: number = 18) => {
   if (isArchivePage)
-    return showLabels ? "Unarchive" : <ArchiveRestore size={18} />;
+    return showLabels ? "Unarchive" : <ArchiveRestore size={iconSize} />;
 
-  return showLabels ? "Archive" : <Archive size={18} />;
+  return showLabels ? "Archive" : <Archive size={iconSize} />;
 };
 
 

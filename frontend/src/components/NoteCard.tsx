@@ -120,8 +120,8 @@ const NoteCard = ({
         {isNotesPage && (
           <button
             className={cn(
-              "absolute top-0 cursor-pointer hidden sm:block right-0 p-3  opacity-0 group-hover:opacity-100",
-              note.isPinned && "opacity-100",
+              "absolute top-0 cursor-pointer right-0 p-3 sm:opacity-0 group-hover:opacity-100",
+              note.isPinned && "opacity-100 sm:opacity-100",
             )}
             onClick={handlePinUnpin}
           >
@@ -130,7 +130,7 @@ const NoteCard = ({
                 "transition-transform",
                 note.isPinned
                   ? "w-4 h-4 text-[#E05A2B] fill-[#E05A2B]/50"
-                  : "w-4.5 h-4.5 text-slate-500 opacity-0 group-hover:opacity-100",
+                  : "w-4 h-4 sm:w-4.5 sm:h-4.5 text-slate-500",
               )}
             />
           </button>

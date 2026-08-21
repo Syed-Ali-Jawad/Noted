@@ -339,7 +339,7 @@ const MobileTopBar = ({
           </div>
           <div>
             {selectedNotes.length > 0 && (
-              <NoteActions className="gap-x-4" />
+              <NoteActions iconSize={20} className="gap-x-4" />
             )}
           </div>
         </div>
