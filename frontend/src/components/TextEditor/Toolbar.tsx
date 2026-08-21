@@ -1,6 +1,5 @@
 import {
   BasicTextStyleButton,
-  BlockTypeSelect,
   CreateLinkButton,
   FormattingToolbar,
 } from "@blocknote/react";
@@ -17,6 +16,7 @@ import { cn } from "@/lib/utils";
 import { NOTES_COLOR_CLASS_MAP } from "@/shared/constants";
 import { useFormContext, useWatch } from "react-hook-form";
 import type { NoteColor } from "@/types/notes.type";
+import CustomBlockTypeSelect from "./CustomBlockTypeSelect";
 
 const CustomToolbar = ({
   isSaving,
@@ -82,7 +82,7 @@ const CustomToolbar = ({
           <div className="flex gap-x-1 items-center">
             {/* <NoteTypeSelect value={noteType} onChange={handleTypeChange} /> */}
             {/* <div className="border-l-2 border-l-slate-300  h-4 mx-2" /> */}
-            {noteType === NoteType.RICHTEXT && <BlockTypeSelect />}
+            {noteType === NoteType.RICHTEXT && <CustomBlockTypeSelect />}
             <BasicTextStyleButton basicTextStyle="bold" />
             <BasicTextStyleButton basicTextStyle="italic" />
             <BasicTextStyleButton basicTextStyle="underline" />
@@ -246,7 +246,7 @@ const ColorPallete = ({
   />
 );
 
-const BlockNoteStyleSelect = ({
+export const BlockNoteStyleSelect = ({
   triggerElement,
   showChevron = true,
   renderMenuItem,

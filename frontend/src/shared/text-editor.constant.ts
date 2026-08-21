@@ -26,6 +26,7 @@ export const RICHTEXT_SCHEMA = BlockNoteSchema.create({
     heading: defaultBlockSpecs.heading,
     bulletListItem: defaultBlockSpecs.bulletListItem,
     numberedListItem: defaultBlockSpecs.numberedListItem,
+    quote: defaultBlockSpecs.quote,
   },
 });
 
