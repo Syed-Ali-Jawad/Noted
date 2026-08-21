@@ -2,110 +2,78 @@ import type { Note } from "../generated/prisma/client.js";
 
 export const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
-export const DEFAULT_NOTES: Partial<Note>[] = [
-    // ─── PINNED ─────────────────────────────────────────────
-
-    {
-        title: "Welcome to MyNotes 👋",
-        content: `# Welcome 👋
+export const DEFAULT_NOTES: Partial<Note>[] = [{
+    title: "Welcome to MyNotes 👋",
+    content: `# Welcome 👋
 
 This is your personal space for capturing ideas, tasks, and everything in between.
 
-Start by creating a note, checking off a task, or writing down something you don't want to forget.
+You can use **bold text**, *italic text*, and <u>underlined text</u> to make important information stand out.
+
+> A good note-taking app should make capturing ideas feel effortless.
+
+Useful resource: [Google](https://www.google.com/)
 
 **Tip:** Pin important notes so they always stay at the top.`,
-        color: "BLUE",
-        type: "RICHTEXT",
-        isPinned: true,
-        isArchived: false,
-        isTrashed: false,
-    },
+    color: "BLUE",
+    type: "RICHTEXT",
+    isPinned: true,
+    isArchived: false,
+    isTrashed: false,
+},
 
-    {
-        title: "Today's Priorities",
-        content: `- [x] Review current project tasks
-- [ ] Finish the notes app UI
-- [ ] Test authentication flow
-- [ ] Deploy the latest changes
-- [ ] Update portfolio project`,
-        color: "YELLOW",
-        type: "CHECKLIST",
-        isPinned: true,
-        isArchived: false,
-        isTrashed: false,
-    },
+{
+    title: "Project Ideas",
+    content: `## Project Ideas
 
-    // ─── ACTIVE ─────────────────────────────────────────────
+Here are a few projects I'd like to build:
 
-    {
-        title: "Project Ideas",
-        content: `A few ideas I'd like to build:
+1. Expense tracker with charts
+2. Simple habit tracker
+3. Personal bookmark manager
+4. Job application tracker
 
-- Expense tracker with charts
-- Simple habit tracker
-- Personal bookmark manager
-- Job application tracker
+> The next project should probably focus on solving a real problem rather than adding too many features.
 
-The next project should probably focus on solving a real problem rather than adding too many features.`,
-        color: "PURPLE",
-        type: "RICHTEXT",
-        isPinned: false,
-        isArchived: false,
-        isTrashed: false,
-    },
+The goal is to keep each project **small, focused, and useful**.
 
-    {
-        title: "Shopping List",
-        content: `- [ ] Milk
-- [ ] Bread
-- [ ] Eggs
-- [ ] Coffee
-- [ ] Chicken
-- [ ] Fruits`,
-        color: "GREEN",
-        type: "CHECKLIST",
-        isPinned: false,
-        isArchived: false,
-        isTrashed: false,
-    },
+Reference: [MDN Web Docs](https://developer.mozilla.org/)`,
+    color: "PURPLE",
+    type: "RICHTEXT",
+    isPinned: false,
+    isArchived: false,
+    isTrashed: false,
+},
 
-    {
-        title: "Quick Thought",
-        content: `Keep the UI simple.
+{
+    title: "Quick Thought",
+    content: `## Keep the UI simple
 
-Good products don't need every possible feature. Focus on making the core experience fast, predictable, and pleasant to use.`,
-        color: "WHITE",
-        type: "TEXT",
-        isPinned: false,
-        isArchived: false,
-        isTrashed: false,
-    },
+Good products don't need every possible feature.
 
-    // ─── ARCHIVED ───────────────────────────────────────────
+Focus on making the core experience **fast**, *predictable*, and <u>pleasant to use</u>.
 
-    {
-        title: "Old Project Notes",
-        content: `React + Node + PostgreSQL
+### A few principles
 
-Initial project structure:
+1. Reduce unnecessary clicks
+2. Keep important actions visible
+3. Give clear feedback after actions
 
-- React frontend
-- Express API
-- PostgreSQL database
-- Prisma ORM
-- JWT authentication
+> Simple interfaces are often harder to design than complicated ones.
 
-The project was eventually replaced with a newer version.`,
-        color: "PURPLE",
-        type: "TEXT",
-        isPinned: false,
-        isArchived: true,
-        isTrashed: false,
-    },
+A useful resource is [Nielsen Norman Group](https://www.nngroup.com/).`,
+    color: "WHITE",
+    type: "RICHTEXT",
+    isPinned: false,
+    isArchived: false,
+    isTrashed: false,
+},
 
-    {
-        title: "Frontend Learning Plan",
-        content: `Topics to revisit:
+{
+    title: "Frontend Learning Plan",
+    content: `## Frontend Learning Plan
+
+Topics to revisit:
 
 - React rendering
 - State management
@@ -115,62 +83,69 @@ The project was eventually replaced with a newer version.`,
 - REST APIs
 - Testing
 
-Most of the fundamentals are already familiar, but revisiting them regularly helps keep everything sharp.`,
-        color: "BLUE",
-        type: "RICHTEXT",
-        isPinned: false,
-        isArchived: true,
-        isTrashed: false,
-    },
+**Priority:** React rendering and TypeScript.
 
-    {
-        title: "Weekend Plans",
-        content: `- [x] Clean the room
-- [ ] Go for a walk
-- [ ] Watch a movie
-- [ ] Finish the book
-- [ ] Prepare for next week`,
-        color: "YELLOW",
-        type: "CHECKLIST",
-        isPinned: false,
-        isArchived: true,
-        isTrashed: false,
-    },
+*Performance optimization should come after understanding the fundamentals.*
 
-    // ─── TRASH ──────────────────────────────────────────────
+> Strong fundamentals make learning new libraries much easier.
 
-    {
-        title: "Temporary Notes",
-        content: `Temporary information that is no longer needed.
+Most of the fundamentals are already familiar, but revisiting them regularly helps keep everything sharp.
 
-Delete this note permanently when everything has been confirmed.`,
-        color: "WHITE",
-        type: "TEXT",
-        isPinned: false,
-        isArchived: false,
-        isTrashed: true,
-    },
+Learn more at [React](https://react.dev/).`,
+    color: "BLUE",
+    type: "RICHTEXT",
+    isPinned: false,
+    isArchived: true,
+    isTrashed: false,
+},
 
-    {
-        title: "Old Shopping List",
-        content: `- [x] Rice
-- [x] Cooking oil
-- [x] Tea
-- [x] Biscuits`,
-        color: "GREEN",
-        type: "CHECKLIST",
-        isPinned: false,
-        isArchived: false,
-        isTrashed: true,
-    },
+{
+    title: "Old Project Notes",
+    content: `# React + Node + PostgreSQL
 
-    {
-        title: "Unused Idea",
-        content: `Build a small dashboard that shows frequently used links, recent documents, and useful shortcuts.`,
-        color: "PURPLE",
-        type: "RICHTEXT",
-        isPinned: false,
-        isArchived: false,
-        isTrashed: true,
-    },
-];
+Initial project structure:
+
+- React frontend
+- Express API
+- PostgreSQL database
+- Prisma ORM
+- JWT authentication
+
+### Architecture
+
+1. React handles the UI
+2. Express exposes the REST API
+3. PostgreSQL stores application data
+4. Prisma handles database access
+
+> Keep the backend simple until the application actually needs more complexity.
+
+Useful documentation: [PostgreSQL](https://www.postgresql.org/docs/)`,
+    color: "PURPLE",
+    type: "RICHTEXT",
+    isPinned: false,
+    isArchived: true,
+    isTrashed: false,
+},
+
+{
+    title: "Unused Idea",
+    content: `## Dashboard Idea
+
+Build a small dashboard that shows:
+
+1. Frequently used links
+2. Recent documents
+3. Useful shortcuts
+
+> A simple start page could make frequently used resources easier to access.
+
+Potential reference: [React Documentation](https://react.dev/learn).
+
+The goal is to keep the first version **small and focused**.`,
+    color: "PURPLE",
+    type: "RICHTEXT",
+    isPinned: false,
+    isArchived: false,
+    isTrashed: true,
+}];
