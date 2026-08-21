@@ -156,7 +156,7 @@ const CustomBlockTypeSelect = () => {
           </button>
         );
       }}
-      menuClasses="min-w-36"
+      menuClasses="min-w-36 ml-3 sm:ml-0"
     />
   );
 };
