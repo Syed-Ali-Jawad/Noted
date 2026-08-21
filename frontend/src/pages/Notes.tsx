@@ -10,14 +10,15 @@ import { cn } from "@/lib/utils";
 import { NOTE_TYPE_OPTIONS } from "@/shared/text-editor.constant";
 import { createNote, getNotes, getPinnedNotes } from "@/api/notes.api";
 import useSWR from "swr";
+import EmptyState from "@/components/EmptyState";
 
 const Notes = () => {
   const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
   const [note, setNote] = useState<Note>();
   const { search } = useNotesStore()
   const [isNoteAddOpen, setIsNoteAddOpen] = useState<boolean>(false);
-  const { data: pinnedNotes, isLoading: isPinnedLoading } = useSWR(["/notes/pinned", search], ([, search]) => getPinnedNotes(search))
-  const { data: notes, isLoading } = useSWR(["/notes", search], ([, search]) => getNotes(search))
+  const { data: pinnedNotes = [], isLoading: isPinnedLoading } = useSWR(["/notes/pinned", search], ([, search]) => getPinnedNotes(search))
+  const { data: notes = [], isLoading } = useSWR(["/notes", search], ([, search]) => getNotes(search))
 
   const handleAddNote = async (type: NoteType) => {
     const note = await createNote(type);
@@ -52,12 +53,12 @@ const Notes = () => {
           </div>
 
           <div className="flex flex-col gap-y-10">
-            {(pinnedNotes || []).length > 0 && <NotesView notes={pinnedNotes || []} />}
-            {(notes || []).length > 0 && (
-              <NotesView notes={notes || []} title="other notes" />
+            {pinnedNotes.length > 0 && <NotesView notes={pinnedNotes} />}
+            {notes.length > 0 && (
+              <NotesView notes={notes} title="other notes" />
             )}
             {(isLoading || isPinnedLoading) && <Loader2 className="animate-spin mx-auto size-28 aspect-square text-gray-400 stroke-1" />}
-            {(notes?.length === 0 && pinnedNotes?.length === 0) && <p>No items</p>}
+            {(notes?.length === 0 && pinnedNotes?.length === 0) && <EmptyState description="Add, unarchive or restore notes from trash to view." />}
           </div>
           <div
             className={cn(
