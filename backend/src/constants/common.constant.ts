@@ -2,150 +2,196 @@ import type { Note } from "../generated/prisma/client.js";
 
 export const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
-export const DEFAULT_NOTES: Partial<Note>[] = [{
-    title: "Welcome to MyNotes 👋",
-    content: `# Welcome 👋
+export const DEFAULT_NOTES: Partial<Note>[] = [
+    // ─── PINNED ─────────────────────────────────────────────
+
+    {
+        title: "Welcome to Noted 👋",
+        content: `# Welcome 👋
 
 This is your personal space for capturing ideas, tasks, and everything in between.
 
-You can use **bold text**, *italic text*, and <u>underlined text</u> to make important information stand out.
+You can use **bold text**, *italic text*, and <u>underlined text</u> to highlight important information.
 
 > A good note-taking app should make capturing ideas feel effortless.
 
-Useful resource: [Google](https://www.google.com/)
+Useful resource: [Google](https://www.google.com/)`,
+        color: "BLUE",
+        type: "RICHTEXT",
+        isPinned: true,
+        isArchived: false,
+        isTrashed: false,
+    },
 
-**Tip:** Pin important notes so they always stay at the top.`,
-    color: "BLUE",
-    type: "RICHTEXT",
-    isPinned: true,
-    isArchived: false,
-    isTrashed: false,
-},
+    {
+        title: "Today's Priorities",
+        content: `- [x] Review today's schedule
+- [ ] Reply to important messages
+- [ ] Finish the current task
+- [ ] Organize pending work
+- [ ] Prepare for tomorrow`,
+        color: "YELLOW",
+        type: "CHECKLIST",
+        isPinned: true,
+        isArchived: false,
+        isTrashed: false,
+    },
 
-{
-    title: "Project Ideas",
-    content: `## Project Ideas
+    // ─── ACTIVE ─────────────────────────────────────────────
 
-Here are a few projects I'd like to build:
+    {
+        title: "Things to Remember",
+        content: `A few things I want to keep in mind.
 
-1. Expense tracker with charts
-2. Simple habit tracker
-3. Personal bookmark manager
-4. Job application tracker
+Take breaks when working for long periods, keep important tasks organized, and avoid putting off small tasks that can be finished quickly.
 
-> The next project should probably focus on solving a real problem rather than adding too many features.
+Keeping things simple usually makes it easier to stay consistent.`,
+        color: "PURPLE",
+        type: "TEXT",
+        isPinned: false,
+        isArchived: false,
+        isTrashed: false,
+    },
 
-The goal is to keep each project **small, focused, and useful**.
+    {
+        title: "Shopping List",
+        content: `- [ ] Milk
+- [ ] Bread
+- [ ] Eggs
+- [ ] Coffee
+- [ ] Chicken
+- [ ] Fruits`,
+        color: "GREEN",
+        type: "CHECKLIST",
+        isPinned: false,
+        isArchived: false,
+        isTrashed: false,
+    },
 
-Reference: [MDN Web Docs](https://developer.mozilla.org/)`,
-    color: "PURPLE",
-    type: "RICHTEXT",
-    isPinned: false,
-    isArchived: false,
-    isTrashed: false,
-},
+    {
+        title: "Planning a Weekend Trip",
+        content: `## Planning a Weekend Trip
 
-{
-    title: "Quick Thought",
-    content: `## Keep the UI simple
+A short trip can be much more enjoyable with a little planning.
 
-Good products don't need every possible feature.
+Remember to **check the weather**, *pack light*, and <u>keep important documents somewhere safe</u>.
 
-Focus on making the core experience **fast**, *predictable*, and <u>pleasant to use</u>.
+### Things to consider
 
-### A few principles
+1. Choose the destination
+2. Check travel times
+3. Plan a few activities
+4. Leave some free time
 
-1. Reduce unnecessary clicks
-2. Keep important actions visible
-3. Give clear feedback after actions
+> The best trips usually leave room for a little spontaneity.
 
-> Simple interfaces are often harder to design than complicated ones.
+A useful resource is [Google Maps](https://maps.google.com/).`,
+        color: "WHITE",
+        type: "RICHTEXT",
+        isPinned: false,
+        isArchived: false,
+        isTrashed: false,
+    },
 
-A useful resource is [Nielsen Norman Group](https://www.nngroup.com/).`,
-    color: "WHITE",
-    type: "RICHTEXT",
-    isPinned: false,
-    isArchived: false,
-    isTrashed: false,
-},
+    // ─── ARCHIVED ───────────────────────────────────────────
 
-{
-    title: "Frontend Learning Plan",
-    content: `## Frontend Learning Plan
+    {
+        title: "Old Notes",
+        content: `Some information from an older project.
+
+The original plan included several ideas, tasks, and notes that are no longer relevant.
+
+Keeping old information organized makes it easier to find what is still useful later.`,
+        color: "PURPLE",
+        type: "TEXT",
+        isPinned: false,
+        isArchived: true,
+        isTrashed: false,
+    },
+
+    {
+        title: "Learning Notes",
+        content: `## Learning Notes
 
 Topics to revisit:
 
-- React rendering
-- State management
-- TypeScript generics
-- Performance optimization
-- Accessibility
-- REST APIs
-- Testing
+1. Review the fundamentals
+2. Practice common patterns
+3. Explore new concepts
+4. Build something small
+5. Review what was learned
 
-**Priority:** React rendering and TypeScript.
-
-*Performance optimization should come after understanding the fundamentals.*
-
-> Strong fundamentals make learning new libraries much easier.
-
-Most of the fundamentals are already familiar, but revisiting them regularly helps keep everything sharp.
+> Strong fundamentals make learning new things much easier.
 
 Learn more at [React](https://react.dev/).`,
-    color: "BLUE",
-    type: "RICHTEXT",
-    isPinned: false,
-    isArchived: true,
-    isTrashed: false,
-},
+        color: "BLUE",
+        type: "RICHTEXT",
+        isPinned: false,
+        isArchived: true,
+        isTrashed: false,
+    },
 
-{
-    title: "Old Project Notes",
-    content: `# React + Node + PostgreSQL
+    {
+        title: "Weekend Plans",
+        content: `- [x] Clean the room
+- [ ] Go for a walk
+- [ ] Watch a movie
+- [ ] Finish the book
+- [ ] Prepare for next week`,
+        color: "YELLOW",
+        type: "CHECKLIST",
+        isPinned: false,
+        isArchived: true,
+        isTrashed: false,
+    },
 
-Initial project structure:
+    // ─── TRASH ──────────────────────────────────────────────
 
-- React frontend
-- Express API
-- PostgreSQL database
-- Prisma ORM
-- JWT authentication
+    {
+        title: "Temporary Notes",
+        content: `Temporary information that is no longer needed.
 
-### Architecture
+Delete this note permanently when everything has been confirmed.`,
+        color: "WHITE",
+        type: "TEXT",
+        isPinned: false,
+        isArchived: false,
+        isTrashed: true,
+    },
 
-1. React handles the UI
-2. Express exposes the REST API
-3. PostgreSQL stores application data
-4. Prisma handles database access
+    {
+        title: "Old Shopping List",
+        content: `- [x] Rice
+- [x] Cooking oil
+- [x] Tea
+- [x] Biscuits`,
+        color: "GREEN",
+        type: "CHECKLIST",
+        isPinned: false,
+        isArchived: false,
+        isTrashed: true,
+    },
 
-> Keep the backend simple until the application actually needs more complexity.
+    {
+        title: "Unused Idea",
+        content: `## A Simple Idea
 
-Useful documentation: [PostgreSQL](https://www.postgresql.org/docs/)`,
-    color: "PURPLE",
-    type: "RICHTEXT",
-    isPinned: false,
-    isArchived: true,
-    isTrashed: false,
-},
+Sometimes a small improvement can make a routine much easier.
 
-{
-    title: "Unused Idea",
-    content: `## Dashboard Idea
+1. Identify the problem
+2. Think of a simple solution
+3. Try it out
+4. Keep what works
 
-Build a small dashboard that shows:
+> Small improvements can add up over time.
 
-1. Frequently used links
-2. Recent documents
-3. Useful shortcuts
-
-> A simple start page could make frequently used resources easier to access.
-
-Potential reference: [React Documentation](https://react.dev/learn).
+Potential reference: [MDN Web Docs](https://developer.mozilla.org/).
 
 The goal is to keep the first version **small and focused**.`,
-    color: "PURPLE",
-    type: "RICHTEXT",
-    isPinned: false,
-    isArchived: false,
-    isTrashed: true,
-}];
+        color: "PURPLE",
+        type: "RICHTEXT",
+        isPinned: false,
+        isArchived: false,
+        isTrashed: true,
+    },
+];
