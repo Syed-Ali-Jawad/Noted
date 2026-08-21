@@ -11,7 +11,7 @@ export const DEFAULT_NOTES: Partial<Note>[] = [
 
 This is your personal space for capturing ideas, tasks, and everything in between.
 
-You can use **bold text**, *italic text*, and <u>underlined text</u> to highlight important information.
+You can use **bold text** and *italic text* to highlight important information.
 
 > A good note-taking app should make capturing ideas feel effortless.
 
@@ -74,7 +74,7 @@ Keeping things simple usually makes it easier to stay consistent.`,
 
 A short trip can be much more enjoyable with a little planning.
 
-Remember to **check the weather**, *pack light*, and <u>keep important documents somewhere safe</u>.
+Remember to **check the weather** and *pack light*.
 
 ### Things to consider
 

@@ -12,6 +12,7 @@ import type { Note } from "@/types/notes.type";
 import { useEffect, useState } from "react";
 import {
   checkListToMarkdown,
+  normalizeContent,
 } from "./utils";
 import useEditor from "@/hooks/useEditor";
 import useSWRMutation from "swr/mutation";
@@ -129,7 +130,7 @@ const TextEditor = ({ note }: { note: Note }) => {
 
     // BlockNote fires onChange during initialization,
     // so only update the form when the content actually changes.
-    if (content === markdown) {
+    if (normalizeContent(content) === normalizeContent(markdown)) {
       return;
     }
 

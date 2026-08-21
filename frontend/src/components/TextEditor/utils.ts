@@ -70,3 +70,19 @@ const stripMarkdown = (text: string) =>
     // links: [text](url)
     .replace(/\[([^\]]+)\]\([^)]+\)/g, "$1")
     .trim();
+
+
+export const normalizeContent = (value: string) =>
+  value
+    // Normalize line endings
+    .replace(/\r\n/g, "\n")
+    .replace(/\r/g, "\n")
+
+    // Normalize trailing whitespace on each line
+    .replace(/[ \t]+$/gm, "")
+
+    // Normalize excessive blank lines
+    .replace(/\n{3,}/g, "\n\n")
+
+    // Remove leading/trailing whitespace
+    .trim();

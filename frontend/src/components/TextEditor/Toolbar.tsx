@@ -85,7 +85,6 @@ const CustomToolbar = ({
             {noteType === NoteType.RICHTEXT && <CustomBlockTypeSelect />}
             <BasicTextStyleButton basicTextStyle="bold" />
             <BasicTextStyleButton basicTextStyle="italic" />
-            <BasicTextStyleButton basicTextStyle="underline" />
             <BasicTextStyleButton basicTextStyle="strike" />
             <CreateLinkButton />
             {/* <ImageInput /> */}
