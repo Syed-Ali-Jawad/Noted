@@ -16,8 +16,8 @@ const Notes = () => {
   const [note, setNote] = useState<Note>();
   const { search } = useNotesStore()
   const [isNoteAddOpen, setIsNoteAddOpen] = useState<boolean>(false);
-  const { data: notes, isLoading } = useSWR(["/notes", search], ([, search]) => getNotes(search))
   const { data: pinnedNotes, isLoading: isPinnedLoading } = useSWR(["/notes/pinned", search], ([, search]) => getPinnedNotes(search))
+  const { data: notes, isLoading } = useSWR(["/notes", search], ([, search]) => getNotes(search))
 
   const handleAddNote = async (type: NoteType) => {
     const note = await createNote(type);
