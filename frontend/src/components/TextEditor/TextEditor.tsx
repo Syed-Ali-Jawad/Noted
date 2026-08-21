@@ -9,7 +9,7 @@ import { NoteType } from "@/types/enums";
 import { cn, revalidate } from "@/lib/utils";
 import { NOTES_COLOR_CLASS_MAP } from "@/shared/constants";
 import type { Note } from "@/types/notes.type";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   checkListToMarkdown,
 } from "./utils";
