@@ -4,7 +4,7 @@ import api from "./client";
 export const login = async (_key: string, { arg }: { arg: LoginForm }) => {
     try {
         const { data: response } = await api.post("/login", arg);
-        console.log(response)
+
         localStorage.setItem("token", response.data.token);
 
         return response.data;

@@ -62,6 +62,50 @@ const TextEditor = ({ note }: { note: Note }) => {
     content: note.content,
     placeholder: "Take a note..."
   })
+  useEffect(() => {
+    const editorElement = document.querySelector(".note-editor");
+
+    if (window.innerWidth > 640 || !editorElement) return;
+
+    const handleBeforeInput = (event: Event) => {
+      const inputEvent = event as InputEvent;
+
+      if (inputEvent.inputType !== "insertParagraph") return;
+
+      event.preventDefault();
+
+      const { block } =
+        editor.getTextCursorPosition();
+
+      // Create a new paragraph after the current block
+      editor.insertBlocks(
+        [
+          {
+            type: "paragraph",
+            content: [],
+          },
+        ],
+        block.id,
+        "after",
+      );
+
+      // Move cursor to the newly created block
+      const blocks = editor.document;
+      const currentIndex = blocks.findIndex((b) => b.id === block.id);
+
+      const newBlock = blocks[currentIndex + 1];
+
+      if (newBlock) {
+        editor.setTextCursorPosition(newBlock.id, "start");
+      }
+    };
+
+    editorElement.addEventListener("beforeinput", handleBeforeInput);
+
+    return () => {
+      editorElement.removeEventListener("beforeinput", handleBeforeInput);
+    };
+  }, [editor]);
 
   useEffect(() => {
     if (!image) {
@@ -154,21 +198,6 @@ const TextEditor = ({ note }: { note: Note }) => {
     editor.removeBlocks([block.id])
   };
 
-  const handleBeforeInput = (event) => {
-    console.log(event)
-    const inputEvent = event.nativeEvent as InputEvent;
-
-    if (inputEvent.inputType === "insertParagraph" && window.innerWidth < 640) {
-      event.preventDefault();
-
-      editor.insertBlocks(
-        [{ type: "paragraph" }],
-        editor.getTextCursorPosition().block,
-        "after"
-      );
-    }
-  }
-
   return (
     <FormProvider {...form}>
       <div
@@ -199,8 +228,9 @@ const TextEditor = ({ note }: { note: Note }) => {
               className="w-full min-w-0 max-w-full rounded-2xl"
               sideMenu={false}
               onChange={handleContentChange}
-              onKeyDown={handleKeyDown}
-              onBeforeInput={handleBeforeInput}
+              // onKeyDown={handleKeyDown}
+              // onBeforeInput={e=>console.log(e)}
+              onInput={e => console.log(e)}
             >
               <CustomToolbar isSaving={isSaving} showSaving={showSaving} />
             </BlockNoteView>
