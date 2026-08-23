@@ -85,11 +85,11 @@ const TextEditor = ({ note }: { note: Note }) => {
     reset({
       type: note.type,
       title: note.title,
-      content: note.content,
+      content,
       color: note.color,
       image: note.image,
     });
-  }, [note.type]);
+  }, [note.id]);
 
 
   useEffect(() => {
@@ -155,6 +155,7 @@ const TextEditor = ({ note }: { note: Note }) => {
   };
 
   const handleBeforeInput = (event) => {
+    console.log(event)
     const inputEvent = event.nativeEvent as InputEvent;
 
     if (inputEvent.inputType === "insertParagraph" && window.innerWidth < 640) {
