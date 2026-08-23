@@ -62,6 +62,7 @@ const TextEditor = ({ note }: { note: Note }) => {
     content: note.content,
     placeholder: "Take a note..."
   })
+
   useEffect(() => {
     const editorElement = document.querySelector(".note-editor");
 
@@ -72,32 +73,90 @@ const TextEditor = ({ note }: { note: Note }) => {
 
       if (inputEvent.inputType !== "insertParagraph") return;
 
+      const { block } = editor.getTextCursorPosition();
+
+      const isListItem =
+        block.type === "checkListItem" ||
+        block.type === "bulletListItem" ||
+        block.type === "numberedListItem";
+
+      if (isListItem) {
+        event.preventDefault();
+
+        const content = Array.isArray(block.content)
+          ? block.content
+          : [];
+
+        const text = content
+          .filter((item) => item.type === "text")
+          .map((item) => item.text)
+          .join("");
+
+        const { state } = editor._tiptapEditor;
+        const { from } = state.selection;
+
+        const blockStart = state.doc.resolve(from).start();
+        const offset = from - blockStart;
+
+        const beforeText = text.slice(0, offset);
+        const afterText = text.slice(offset);
+
+        // Keep text before cursor in current item
+        editor.updateBlock(block, {
+          content: beforeText,
+        });
+
+        // Create same type of list item with remaining text
+        const newBlock =
+          block.type === "checkListItem"
+            ? {
+              type: "checkListItem" as const,
+              content: afterText,
+              props: {
+                checked: false,
+              },
+            }
+            : {
+              type: block.type,
+              content: afterText,
+            };
+
+        editor.insertBlocks(
+          [newBlock],
+          block.id,
+          "after"
+        );
+
+        const blocks = editor.document;
+        const currentIndex = blocks.findIndex(
+          (b) => b.id === block.id
+        );
+
+        const nextBlock = blocks[currentIndex + 1];
+
+        if (nextBlock) {
+          editor.setTextCursorPosition(nextBlock.id, "start");
+        }
+
+        return;
+      }
+
+      // Everything else → soft line break
       event.preventDefault();
 
-      const { block } =
-        editor.getTextCursorPosition();
+      const tiptap = editor._tiptapEditor;
+      const { state, view } = tiptap;
+      const { schema } = state;
 
-      // Create a new paragraph after the current block
-      editor.insertBlocks(
-        [
-          {
-            type: "paragraph",
-            content: [],
-          },
-        ],
-        block.id,
-        "after",
+      const hardBreak = schema.nodes.hardBreak;
+
+      if (!hardBreak) return;
+
+      const tr = state.tr.replaceSelectionWith(
+        hardBreak.create()
       );
 
-      // Move cursor to the newly created block
-      const blocks = editor.document;
-      const currentIndex = blocks.findIndex((b) => b.id === block.id);
-
-      const newBlock = blocks[currentIndex + 1];
-
-      if (newBlock) {
-        editor.setTextCursorPosition(newBlock.id, "start");
-      }
+      view.dispatch(tr);
     };
 
     editorElement.addEventListener("beforeinput", handleBeforeInput);
