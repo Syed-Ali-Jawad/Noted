@@ -111,8 +111,6 @@ const TextEditor = ({ note }: { note: Note }) => {
         }
       });
 
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-
       setShowSaving(false);
     }, 800);
 
@@ -156,6 +154,20 @@ const TextEditor = ({ note }: { note: Note }) => {
     editor.removeBlocks([block.id])
   };
 
+  const handleBeforeInput = (event) => {
+    const inputEvent = event.nativeEvent as InputEvent;
+
+    if (inputEvent.inputType === "insertParagraph" && window.innerWidth < 640) {
+      event.preventDefault();
+
+      editor.insertBlocks(
+        [{ type: "paragraph" }],
+        editor.getTextCursorPosition().block,
+        "after"
+      );
+    }
+  }
+
   return (
     <FormProvider {...form}>
       <div
@@ -187,6 +199,7 @@ const TextEditor = ({ note }: { note: Note }) => {
               sideMenu={false}
               onChange={handleContentChange}
               onKeyDown={handleKeyDown}
+              onBeforeInput={handleBeforeInput}
             >
               <CustomToolbar isSaving={isSaving} showSaving={showSaving} />
             </BlockNoteView>
