@@ -228,9 +228,7 @@ const TextEditor = ({ note }: { note: Note }) => {
               className="w-full min-w-0 max-w-full rounded-2xl"
               sideMenu={false}
               onChange={handleContentChange}
-              // onKeyDown={handleKeyDown}
-              // onBeforeInput={e=>console.log(e)}
-              onInput={e => console.log(e)}
+              onKeyDown={handleKeyDown}
             >
               <CustomToolbar isSaving={isSaving} showSaving={showSaving} />
             </BlockNoteView>
