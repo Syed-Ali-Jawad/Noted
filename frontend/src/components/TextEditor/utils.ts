@@ -5,7 +5,7 @@ import {
   RICHTEXT_SCHEMA,
   TEXT_INITIAL_CONTENT,
   TEXT_SCHEMA,
-} from "@/shared/text-editor.constant";
+} from "@/shared/constants/text-editor.constant";
 import { NoteType } from "@/types/enums";
 import type { CheckListBlock } from "@/types/notes.type";
 import type { Block } from "@blocknote/core";

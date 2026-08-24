@@ -3,11 +3,11 @@ import "./editor.css";
 import "@blocknote/core/fonts/inter.css";
 import "@blocknote/mantine/style.css";
 import { Input } from "@/ui/input";
-import CustomToolbar from "./Toolbar";
+import CustomToolbar from "./Toolbar/Toolbar";
 import { FormProvider, useForm } from "react-hook-form";
 import { NoteType } from "@/types/enums";
 import { cn, revalidate } from "@/lib/utils";
-import { NOTES_COLOR_CLASS_MAP } from "@/shared/constants";
+import { NOTES_COLOR_CLASS_MAP } from "@/shared/constants/constants";
 import type { Note } from "@/types/notes.type";
 import { useEffect, useState } from "react";
 import {
@@ -17,28 +17,14 @@ import {
 import useEditor from "@/hooks/useEditor";
 import useSWRMutation from "swr/mutation";
 import { updateSingleNote } from "@/api/notes.api";
-
-const defaultValues: Note = {
-  id: "",
-  title: "",
-  content: "",
-  type: NoteType.TEXT,
-  color: "WHITE",
-  image: null,
-  isArchived: false,
-  isPinned: false,
-  isTrashed: false,
-  archivedAt: null,
-  createdAt: "",
-};
+import { DEFAULT_VALUES_EDITOR } from "@/shared/constants/text-editor.constant";
 
 const TextEditor = ({ note }: { note: Note }) => {
   const [showSaving, setShowSaving] = useState<boolean>(false);
   const [imageUrl, setImageUrl] = useState<string | null>(null);
 
-
   const form = useForm<Note>({
-    defaultValues,
+    defaultValues: DEFAULT_VALUES_EDITOR,
   });
 
   const {

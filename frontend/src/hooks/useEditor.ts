@@ -3,7 +3,14 @@ import { getInitialContent, getSchema, parseChecklist } from "@/components/TextE
 import { useCreateBlockNote } from "@blocknote/react";
 import { useEffect } from "react";
 
-const useEditor = ({ type, content, placeholder, isContentView = false }: { type: NoteType, content: string, placeholder?: string, isContentView?: boolean }) => {
+interface editorProps {
+    type: NoteType,
+    content: string,
+    placeholder?: string,
+    isContentView?: boolean
+}
+
+const useEditor = ({ type, content, placeholder, isContentView = false }: editorProps) => {
     const editor = useCreateBlockNote(
         {
             schema: getSchema(type),

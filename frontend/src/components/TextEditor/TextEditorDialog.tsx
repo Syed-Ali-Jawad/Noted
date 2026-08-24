@@ -1,7 +1,7 @@
 import { Dialog, DialogContent } from "@/ui/dialog";
 import { useEffect, useState } from "react";
 import TextEditor from "./TextEditor";
-import { PAGE_ROUTES } from "@/shared/constants";
+import { PAGE_ROUTES } from "@/shared/constants/constants";
 import { Pin, X } from "lucide-react";
 import { cn, revalidate } from "@/lib/utils";
 import NoteActions from "../NoteActions";
@@ -10,13 +10,16 @@ import type { Note } from "@/types/notes.type";
 import useSWRMutation from "swr/mutation";
 import { updateSingleNote } from "@/api/notes.api";
 
+
+interface TextEditorDialog {
+  note: Note;
+  onOpenChange: (val: boolean) => void;
+}
+
 const TextEditorDialog = ({
   note,
   onOpenChange,
-}: {
-  note: Note;
-  onOpenChange: (val: boolean) => void;
-}) => {
+}: TextEditorDialog) => {
   const { pathname } = useLocation();
   const [isPinned, setIsPinned] = useState<boolean>(note.isPinned)
   const { trigger: pinUnpinNote } = useSWRMutation("/note/id", updateSingleNote, {

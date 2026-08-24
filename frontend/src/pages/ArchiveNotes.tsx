@@ -1,4 +1,3 @@
-import NotesPageLayout from "@/components/NotesPageLayout";
 import NotesView from "@/components/NotesView";
 import useNotesStore from "@/store";
 import { useEffect } from "react";
@@ -17,7 +16,7 @@ const ArchiveNotes = () => {
   }, []);
 
   return (
-    <NotesPageLayout>
+    <>
       <div className="flex flex-col gap-y-12 mt-10">
         <h1 className="text-4xl font-bold">Archive</h1>
 
@@ -27,7 +26,7 @@ const ArchiveNotes = () => {
           <EmptyState description="No notes in archive" />
         )}
       </div>
-    </NotesPageLayout>
+    </>
   );
 };
 

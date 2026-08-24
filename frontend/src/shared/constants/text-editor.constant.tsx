@@ -1,7 +1,9 @@
 import { NoteType } from "@/types/enums";
-import { SquareCheck, TextInitial as RichTextIcon, Type } from "lucide-react";
+import { SquareCheck, TextInitial as RichTextIcon, Type, AlignLeft, Heading1, Heading2, Heading3, List, ListOrdered, Quote } from "lucide-react";
 import { NOTES_COLOR_CLASS_MAP } from "./constants";
 import { BlockNoteSchema, defaultBlockSpecs } from "@blocknote/core";
+import type { MenuOption } from "@/types/text-editor.type";
+import type { Note } from "@/types/notes.type";
 
 export const NOTE_TYPE_OPTIONS: {
   icon: any;
@@ -64,3 +66,56 @@ export const CHECKLIST_INITIAL_CONTENT = [
     },
   },
 ];
+
+
+export const CUSTOM_BLOCK_TYPE_OPTIONS: MenuOption[] = [
+  {
+    value: "paragraph",
+    label: "Paragraph",
+    icon: AlignLeft,
+  },
+  {
+    value: "heading-1",
+    label: "Heading 1",
+    icon: Heading1,
+  },
+  {
+    value: "heading-2",
+    label: "Heading 2",
+    icon: Heading2,
+  },
+  {
+    value: "heading-3",
+    label: "Heading 3",
+    icon: Heading3,
+  },
+  {
+    value: "bullet-list",
+    label: "Bullet List",
+    icon: List,
+  },
+  {
+    value: "numbered-list",
+    label: "Numbered List",
+    icon: ListOrdered,
+  },
+  {
+    value: "quote",
+    label: "Quote",
+    icon: Quote,
+  },
+];
+
+export const DEFAULT_VALUES_EDITOR: Note = {
+  id: "",
+  title: "",
+  content: "",
+  type: NoteType.TEXT,
+  color: "WHITE",
+  image: null,
+  isArchived: false,
+  isPinned: false,
+  isTrashed: false,
+  archivedAt: null,
+  createdAt: "",
+};

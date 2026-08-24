@@ -1,6 +1,6 @@
 import { deleteNotes, deleteSingleNote, updateNotes, updateSingleNote } from "@/api/notes.api";
 import { cn, revalidate, toast } from "@/lib/utils";
-import { PAGE_ROUTES } from "@/shared/constants";
+import { PAGE_ROUTES } from "@/shared/constants/constants";
 import Icons from "@/shared/icons";
 import useNotesStore from "@/store";
 import type { Note } from "@/types/notes.type";
@@ -9,17 +9,19 @@ import { useState } from "react";
 import { useLocation } from "react-router-dom";
 import useSWRMutation from "swr/mutation";
 
+interface NoteActionsProps {
+  showLabels?: boolean;
+  note?: Note;
+  className?: string;
+  iconSize?: number;
+}
+
 const NoteActions = ({
   showLabels,
   note,
   className,
   iconSize = 18,
-}: {
-  showLabels?: boolean;
-  note?: Note;
-  className?: string;
-  iconSize?: number;
-}) => {
+}: NoteActionsProps) => {
   const { pathname } = useLocation();
   const {
     selectedNotes,

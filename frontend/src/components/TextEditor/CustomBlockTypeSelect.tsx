@@ -3,15 +3,11 @@ import {
   useSelectedBlocks,
 } from "@blocknote/react";
 import {
-  AlignLeft,
-  Heading1,
-  Heading2,
-  Heading3,
-  List,
-  ListOrdered,
-  Quote,
+  AlignLeft
 } from "lucide-react";
-import { BlockNoteStyleSelect } from "./Toolbar";
+import { BlockNoteStyleSelect } from "./Toolbar/BlockNoteSelect";
+import { CUSTOM_BLOCK_TYPE_OPTIONS } from "@/shared/constants/text-editor.constant";
+import type { MenuOption } from "@/types/text-editor.type";
 
 const CustomBlockTypeSelect = () => {
   const editor = useBlockNoteEditor();
@@ -24,67 +20,31 @@ const CustomBlockTypeSelect = () => {
       ? selectedBlock.props.level
       : undefined;
 
-  const options = [
-    {
-      value: "paragraph",
-      label: "Paragraph",
-      Icon: AlignLeft,
-    },
-    {
-      value: "heading-1",
-      label: "Heading 1",
-      Icon: Heading1,
-    },
-    {
-      value: "heading-2",
-      label: "Heading 2",
-      Icon: Heading2,
-    },
-    {
-      value: "heading-3",
-      label: "Heading 3",
-      Icon: Heading3,
-    },
-    {
-      value: "bullet-list",
-      label: "Bullet List",
-      Icon: List,
-    },
-    {
-      value: "numbered-list",
-      label: "Numbered List",
-      Icon: ListOrdered,
-    },
-    {
-      value: "quote",
-      label: "Quote",
-      Icon: Quote,
-    },
-  ];
+
 
   const selectedOption =
     currentLevel
-      ? options.find(
-          (option) => option.value === `heading-${currentLevel}`,
-        )
-      : options.find((option) => {
-          if (selectedBlock?.type === "bulletListItem") {
-            return option.value === "bullet-list";
-          }
+      ? CUSTOM_BLOCK_TYPE_OPTIONS.find(
+        (option) => option.value === `heading-${currentLevel}`,
+      )
+      : CUSTOM_BLOCK_TYPE_OPTIONS.find((option) => {
+        if (selectedBlock?.type === "bulletListItem") {
+          return option.value === "bullet-list";
+        }
 
-          if (selectedBlock?.type === "numberedListItem") {
-            return option.value === "numbered-list";
-          }
+        if (selectedBlock?.type === "numberedListItem") {
+          return option.value === "numbered-list";
+        }
 
-          if (selectedBlock?.type === "quote") {
-            return option.value === "quote";
-          }
+        if (selectedBlock?.type === "quote") {
+          return option.value === "quote";
+        }
 
-          return option.value === "paragraph";
-        });
+        return option.value === "paragraph";
+      });
 
   const selectedLabel = selectedOption?.label ?? "Paragraph";
-  const SelectedIcon = selectedOption?.Icon ?? AlignLeft;
+  const SelectedIcon = selectedOption?.icon ?? AlignLeft;
 
   const handleSelect = (value: string) => {
     const block = editor.getTextCursorPosition().block;
@@ -135,30 +95,32 @@ const CustomBlockTypeSelect = () => {
           <span className="text-xs">{selectedLabel}</span>
         </div>
       }
-      options={options as any}
-      renderMenuItem={(item) => {
-        const option = options.find(
-          (option) => option.value === item.value,
-        );
-
-        if (!option) return <></>;
-
-        const Icon = option.Icon;
-
-        return (
-          <button
-            type="button"
-            className="flex w-full cursor-pointer items-center gap-x-2 rounded-sm px-2 py-1.5 text-left text-xs text-(--bn-colors-menu-text) hover:bg-(--bn-colors-hovered-background)"
-            onClick={() => handleSelect(item.value)}
-          >
-            <Icon size={16} />
-            {option.label}
-          </button>
-        );
-      }}
+      options={CUSTOM_BLOCK_TYPE_OPTIONS}
+      renderMenuItem={(item: MenuOption) => <MenuItem item={item} onSelect={handleSelect} />}
       menuClasses="min-w-36 ml-3 sm:ml-0"
     />
   );
 };
 
 export default CustomBlockTypeSelect;
+
+const MenuItem = ({ item, onSelect }: { item: MenuOption, onSelect: (value: string) => void }) => {
+  const option = CUSTOM_BLOCK_TYPE_OPTIONS.find(
+    (option) => option.value === item.value,
+  );
+
+  if (!option) return <></>;
+
+  const Icon = option.icon;
+
+  return (
+    <button
+      type="button"
+      className="flex w-full cursor-pointer items-center gap-x-2 rounded-sm px-2 py-1.5 text-left text-xs text-(--bn-colors-menu-text) hover:bg-(--bn-colors-hovered-background)"
+      onClick={() => onSelect(item.value)}
+    >
+      <Icon size={16} />
+      {option.label}
+    </button>
+  );
+}

@@ -5,7 +5,7 @@ import type { SideBarOption } from "@/types/common.type";
 // import { LogOut } from "lucide-react";
 import { cn } from "@/lib/utils";
 // import Avatar from "@/ui/avatar";
-import { SIDEBAR_OPTIONS } from "@/shared/constants";
+import { SIDEBAR_OPTIONS } from "@/shared/constants/constants";
 
 const Sidebar = () => {
   const navigate = useNavigate();
@@ -17,7 +17,7 @@ const Sidebar = () => {
   }
 
   return (
-    <div className="w-60 mt-4 bg-white hidden lg:flex rounded-xl h-[95dvh]  max-h-173.25 p-6 sticky top-4  flex-col justify-between">
+    <aside className="w-60 mt-4 bg-white hidden lg:flex rounded-xl h-[95dvh]  max-h-173.25 p-6 sticky top-4  flex-col justify-between">
       <div>
         <div className="flex">
           <img src={Logo} className="h-12 w-auto" alt="Logo" />
@@ -65,7 +65,7 @@ const Sidebar = () => {
           <LogOut size={22} className="text-primary" />
         </Link>
       </div> */}
-    </div>
+    </aside>
   );
 };
 

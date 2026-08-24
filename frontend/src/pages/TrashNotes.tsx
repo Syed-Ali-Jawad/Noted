@@ -1,4 +1,3 @@
-import NotesPageLayout from "@/components/NotesPageLayout";
 import NotesView from "@/components/NotesView";
 import useNotesStore from "@/store";
 import { useEffect } from "react";
@@ -16,16 +15,14 @@ const TrashNotes = () => {
   }, []);
 
   return (
-    <NotesPageLayout>
-      <div className="flex flex-col gap-y-12 mt-10">
-        <h1 className="text-4xl font-bold">Trash</h1>
-        {isLoading ? <Loader2 className="animate-spin mx-auto size-28 aspect-square text-gray-400 stroke-1" /> : notes.length ? (
-          <NotesView notes={notes} />
-        ) : (
-          <EmptyState description="No notes in trash" />
-        )}
-      </div>
-    </NotesPageLayout>
+    <div className="flex flex-col gap-y-12 mt-10">
+      <h1 className="text-4xl font-bold">Trash</h1>
+      {isLoading ? <Loader2 className="animate-spin mx-auto size-28 aspect-square text-gray-400 stroke-1" /> : notes.length ? (
+        <NotesView notes={notes} />
+      ) : (
+        <EmptyState description="No notes in trash" />
+      )}
+    </div>
   );
 };
 

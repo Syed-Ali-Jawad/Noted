@@ -3,7 +3,7 @@ import NoteCard from "./NoteCard";
 import Masonry from "react-masonry-css";
 import { useState } from "react";
 import TextEditorDialog from "./TextEditor/TextEditorDialog";
-import { MASONARY_BREAKPOINT_COLUMNS } from "@/shared/constants";
+import { MASONARY_BREAKPOINT_COLUMNS } from "@/shared/constants/constants";
 
 
 const NotesView = ({ notes, title }: { notes: Note[]; title?: string }) => {

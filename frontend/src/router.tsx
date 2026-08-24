@@ -4,7 +4,7 @@ import ErrorPage from "./components/ErrorPage";
 import Notes from "./pages/Notes";
 import ArchiveNotes from "./pages/ArchiveNotes";
 import TrashNotes from "./pages/TrashNotes";
-import { PAGE_ROUTES } from "./shared/constants";
+import { PAGE_ROUTES } from "./shared/constants/constants";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import ProtectedRoute from "./components/ProtectedRoute";

@@ -6,18 +6,12 @@ import PasswordInput from "@/components/form-field/PasswordInput";
 import { Link, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import type { RegisterForm } from "@/types/forms.type";
-import { EMAIL_PATTERN, PASSWORD_PATTERN } from "@/shared/constants";
+import { EMAIL_PATTERN, PASSWORD_PATTERN } from "@/shared/constants/constants";
 import Button from "@/ui/custom-button";
 import useSWRMutation from "swr/mutation";
 import { signup } from "@/api/auth.api";
 import { Loader2 } from "lucide-react";
-
-const defaultValues = {
-  fullName: "",
-  email: "",
-  password: "",
-  confirmPassword: "",
-};
+import { REGISTER_DEFAULT_VALUES } from "@/shared/constants/auth.constant";
 
 const Signup = () => {
   const {
@@ -26,7 +20,7 @@ const Signup = () => {
     setError,
     formState: { errors },
   } = useForm<RegisterForm>({
-    defaultValues,
+    defaultValues: REGISTER_DEFAULT_VALUES,
   });
 
   const navigate = useNavigate()

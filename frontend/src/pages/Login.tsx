@@ -5,24 +5,19 @@ import { useForm } from "react-hook-form";
 import type { LoginForm } from "../types/forms.type";
 import FieldInput from "@/components/form-field/FieldInput";
 import GradientPage from "@/components/GradientPage";
-import { EMAIL_PATTERN, PASSWORD_PATTERN } from "@/shared/constants";
+import { EMAIL_PATTERN, PASSWORD_PATTERN } from "@/shared/constants/constants";
 import Button from "@/ui/custom-button";
 import { login } from "@/api/auth.api";
 import useSWRMutation from "swr/mutation";
 import { Loader2 } from "lucide-react";
-
-const defaultValues: LoginForm = {
-  email: "",
-  password: "",
-  shallRemember: false,
-};
+import { LOGIN_DEFAULT_VALUES } from "@/shared/constants/auth.constant";
 
 const Login = () => {
   const {
     handleSubmit,
     register,
     formState: { errors },
-  } = useForm<LoginForm>({ defaultValues });
+  } = useForm<LoginForm>({ defaultValues: LOGIN_DEFAULT_VALUES });
 
   const navigate = useNavigate()
 

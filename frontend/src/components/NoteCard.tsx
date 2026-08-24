@@ -4,7 +4,7 @@ import {
   NOTES_COLOR_CLASS_MAP,
   NOTES_TRASH_COLOR_CLASS_MAP,
   PAGE_ROUTES,
-} from "@/shared/constants";
+} from "@/shared/constants/constants";
 import useNotesStore from "@/store";
 import type { Note, NoteColor } from "@/types/notes.type";
 import { Pin, } from "lucide-react";
@@ -12,11 +12,11 @@ import { useLocation } from "react-router-dom";
 
 import { BlockNoteView } from "@blocknote/mantine";
 import "./TextEditor/editor.css";
-import { ColorSelect } from "./TextEditor/Toolbar";
 import NoteActions from "./NoteActions";
 import useEditor from "@/hooks/useEditor";
 import { updateSingleNote } from "@/api/notes.api";
 import useSWRMutation from "swr/mutation";
+import ColorSelect from "./TextEditor/Toolbar/ColorSelect";
 
 const NoteCard = ({
   note,
