@@ -96,7 +96,7 @@ const CustomBlockTypeSelect = () => {
         </div>
       }
       options={CUSTOM_BLOCK_TYPE_OPTIONS}
-      renderMenuItem={(item: MenuOption) => <MenuItem item={item} onSelect={handleSelect} />}
+      renderMenuItem={(item) => <MenuItem item={item as MenuOption} onSelect={handleSelect} />}
       menuClasses="min-w-36 ml-3 sm:ml-0"
     />
   );

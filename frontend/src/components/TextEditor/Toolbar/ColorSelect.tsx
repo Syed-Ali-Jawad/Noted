@@ -30,9 +30,9 @@ const ColorSelect = ({
                 }
                 menuClasses="min-w-[unset] bg-gray-200 p-2 flex flex-col gap-2"
                 options={COLOR_SELECT_OPTIONS}
-                renderMenuItem={(item: ColorSelectOption) => (
+                renderMenuItem={(item) => (
                     <ColorPallete
-                        className={item.color}
+                        className={(item as ColorSelectOption).color}
                         onClick={() => handleSelect(item.value as NoteColor)}
                         title={item.value}
                     />
