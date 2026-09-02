@@ -1,4 +1,4 @@
-import { createElement, useEffect, useState } from "react";
+import { createElement, useState } from "react";
 import {
   Plus,
   SquareCheck,
@@ -39,15 +39,8 @@ const Notes = () => {
     setIsNoteAddOpen(false);
   };
 
-  useEffect(() => {
-    scrollTo(0, 0);
-  }, []);
-  
-
   if (pinnedNotesError || error) {
-    throw new Error(
-      error?.message || pinnedNotesError?.message || "Error fetching notes",
-    );
+    throw pinnedNotesError || error;
   }
 
   return (

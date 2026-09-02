@@ -1,14 +1,20 @@
-import { Outlet, Navigate } from "react-router-dom"
-import PageLayout from "./PageLayout"
+import { Outlet, Navigate } from "react-router-dom";
+import PageLayout from "./PageLayout";
+import ScrollToTop from "./ScrollToTop";
 
 const ProtectedRoute = () => {
-    const token = localStorage.getItem("token")
+  const token = localStorage.getItem("token");
 
-    if (token) {
-        return <PageLayout><Outlet /></PageLayout>
-    } else {
-        return <Navigate to={"/login"} replace />
-    }
-}
+  if (token) {
+    return (
+      <PageLayout>
+        <ScrollToTop />
+        <Outlet />
+      </PageLayout>
+    );
+  } else {
+    return <Navigate to={"/login"} replace />;
+  }
+};
 
 export default ProtectedRoute;
