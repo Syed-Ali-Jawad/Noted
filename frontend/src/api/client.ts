@@ -30,7 +30,6 @@ api.interceptors.response.use(
           const response = await refreshAccessToken();
 
           const newToken = response.data.token;
-          console.log(newToken);
           localStorage.setItem("token", newToken);
 
           originalRequest.headers.Authorization = `Bearer ${newToken}`;
@@ -43,7 +42,6 @@ api.interceptors.response.use(
         }
       } else {
         localStorage.removeItem("token");
-        console.log("no refresh token found, redirecting to login");
         window.location.href = "/login";
       }
     }
