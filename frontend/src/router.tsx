@@ -8,9 +8,9 @@ import { PAGE_ROUTES } from "./shared/constants/constants";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import ProtectedRoute from "./components/ProtectedRoute";
+import NotFound from "./components/NotFound";
 
 const router = createBrowserRouter([
-
   { path: PAGE_ROUTES.login, element: <Login /> },
   { path: PAGE_ROUTES.register, element: <Signup /> },
   {
@@ -22,6 +22,7 @@ const router = createBrowserRouter([
       { path: PAGE_ROUTES.trash, element: <TrashNotes /> },
     ],
   },
+  { path: "*", element: <NotFound /> },
 ]);
 
 export default router;

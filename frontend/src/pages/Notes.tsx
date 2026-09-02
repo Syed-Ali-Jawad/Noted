@@ -1,5 +1,10 @@
 import { createElement, useEffect, useState } from "react";
-import { Plus, SquareCheck, TextInitial as RichTextIcon, Loader2 } from "lucide-react";
+import {
+  Plus,
+  SquareCheck,
+  TextInitial as RichTextIcon,
+  Loader2,
+} from "lucide-react";
 import NotesView from "@/components/NotesView";
 import TextEditorDialog from "@/components/TextEditor/TextEditorDialog";
 import useNotesStore from "@/store";
@@ -14,10 +19,18 @@ import EmptyState from "@/components/EmptyState";
 const Notes = () => {
   const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
   const [note, setNote] = useState<Note>();
-  const { search } = useNotesStore()
+  const { search } = useNotesStore();
   const [isNoteAddOpen, setIsNoteAddOpen] = useState<boolean>(false);
-  const { data: pinnedNotes = [], isLoading: isPinnedLoading } = useSWR(["/notes/pinned", search], ([, search]) => getPinnedNotes(search))
-  const { data: notes = [], isLoading } = useSWR(["/notes", search], ([, search]) => getNotes(search))
+  const {
+    data: pinnedNotes = [],
+    isLoading: isPinnedLoading,
+    error: pinnedNotesError,
+  } = useSWR(["/notes/pinned", search], ([, search]) => getPinnedNotes(search));
+  const {
+    data: notes = [],
+    isLoading,
+    error,
+  } = useSWR(["/notes", search], ([, search]) => getNotes(search));
 
   const handleAddNote = async (type: NoteType) => {
     const note = await createNote(type);
@@ -29,6 +42,13 @@ const Notes = () => {
   useEffect(() => {
     scrollTo(0, 0);
   }, []);
+  
+
+  if (pinnedNotesError || error) {
+    throw new Error(
+      error?.message || pinnedNotesError?.message || "Error fetching notes",
+    );
+  }
 
   return (
     <>
@@ -52,11 +72,15 @@ const Notes = () => {
 
         <div className="flex flex-col gap-y-10">
           {pinnedNotes.length > 0 && <NotesView notes={pinnedNotes} />}
-          {notes.length > 0 && (
-            <NotesView notes={notes} title="other notes" />
+          {notes.length > 0 && <NotesView notes={notes} title="other notes" />}
+          {(isLoading || isPinnedLoading) && (
+            <Loader2 className="animate-spin mx-auto size-28 aspect-square text-gray-400 stroke-1" />
           )}
-          {(isLoading || isPinnedLoading) && <Loader2 className="animate-spin mx-auto size-28 aspect-square text-gray-400 stroke-1" />}
-          {(notes?.length === 0 && pinnedNotes?.length === 0 && !(isLoading || isPinnedLoading)) && <EmptyState description="Add, unarchive or restore notes from trash to view." />}
+          {notes?.length === 0 &&
+            pinnedNotes?.length === 0 &&
+            !(isLoading || isPinnedLoading) && (
+              <EmptyState description="Add, unarchive or restore notes from trash to view." />
+            )}
         </div>
         <div
           className={cn(
