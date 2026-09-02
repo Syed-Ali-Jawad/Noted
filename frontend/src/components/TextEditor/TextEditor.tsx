@@ -10,10 +10,7 @@ import { cn, revalidate } from "@/lib/utils";
 import { NOTES_COLOR_CLASS_MAP } from "@/shared/constants/constants";
 import type { Note } from "@/types/notes.type";
 import { useEffect, useState } from "react";
-import {
-  checkListToMarkdown,
-  normalizeContent,
-} from "./utils";
+import { checkListToMarkdown, normalizeContent } from "./utils";
 import useEditor from "@/hooks/useEditor";
 import useSWRMutation from "swr/mutation";
 import { updateSingleNote } from "@/api/notes.api";
@@ -35,19 +32,28 @@ const TextEditor = ({ note }: { note: Note }) => {
     formState: { isDirty },
   } = form;
 
-  const { trigger: updateNote, isMutating: isSaving } = useSWRMutation("/note/id", updateSingleNote, {
-    onSuccess: () => {
-      revalidate("/notes", "/notes/pinned", "/notes/archived", "/notes/trashed")
-    }
-  })
+  const { trigger: updateNote, isMutating: isSaving } = useSWRMutation(
+    "/note/id",
+    updateSingleNote,
+    {
+      onSuccess: () => {
+        revalidate(
+          "/notes",
+          "/notes/pinned",
+          "/notes/archived",
+          "/notes/trashed",
+        );
+      },
+    },
+  );
 
   const { title, color, type, image, content } = watch();
 
   const editor = useEditor({
     type,
     content: note.content,
-    placeholder: "Take a note..."
-  })
+    placeholder: "Take a note...",
+  });
 
   useEffect(() => {
     const editorElement = document.querySelector(".note-editor");
@@ -69,9 +75,7 @@ const TextEditor = ({ note }: { note: Note }) => {
       if (isListItem) {
         event.preventDefault();
 
-        const content = Array.isArray(block.content)
-          ? block.content
-          : [];
+        const content = Array.isArray(block.content) ? block.content : [];
 
         const text = content
           .filter((item) => item.type === "text")
@@ -96,27 +100,21 @@ const TextEditor = ({ note }: { note: Note }) => {
         const newBlock =
           block.type === "checkListItem"
             ? {
-              type: "checkListItem" as const,
-              content: afterText,
-              props: {
-                checked: false,
-              },
-            }
+                type: "checkListItem" as const,
+                content: afterText,
+                props: {
+                  checked: false,
+                },
+              }
             : {
-              type: block.type,
-              content: afterText,
-            };
+                type: block.type,
+                content: afterText,
+              };
 
-        editor.insertBlocks(
-          [newBlock],
-          block.id,
-          "after"
-        );
+        editor.insertBlocks([newBlock], block.id, "after");
 
         const blocks = editor.document;
-        const currentIndex = blocks.findIndex(
-          (b) => b.id === block.id
-        );
+        const currentIndex = blocks.findIndex((b) => b.id === block.id);
 
         const nextBlock = blocks[currentIndex + 1];
 
@@ -138,9 +136,7 @@ const TextEditor = ({ note }: { note: Note }) => {
 
       if (!hardBreak) return;
 
-      const tr = state.tr.replaceSelectionWith(
-        hardBreak.create()
-      );
+      const tr = state.tr.replaceSelectionWith(hardBreak.create());
 
       view.dispatch(tr);
     };
@@ -174,12 +170,11 @@ const TextEditor = ({ note }: { note: Note }) => {
     reset({
       type: note.type,
       title: note.title,
-      content,
+      content: note.content,
       color: note.color,
       image: note.image,
     });
   }, [note.id]);
-
 
   useEffect(() => {
     if (!isDirty) {
@@ -189,15 +184,15 @@ const TextEditor = ({ note }: { note: Note }) => {
     const timer = setTimeout(async () => {
       setShowSaving(true);
 
-
       await updateNote({
-        id: note.id, updates: {
+        id: note.id,
+        updates: {
           title,
           content,
           image,
           type,
-          color
-        }
+          color,
+        },
       });
 
       setShowSaving(false);
@@ -205,7 +200,6 @@ const TextEditor = ({ note }: { note: Note }) => {
 
     return () => clearTimeout(timer);
   }, [title, color, content, image, type]);
-
 
   const handleContentChange = () => {
     if (isSaving) return;
@@ -217,7 +211,9 @@ const TextEditor = ({ note }: { note: Note }) => {
 
     // BlockNote fires onChange during initialization,
     // so only update the form when the content actually changes.
-    if (normalizeContent(content) === normalizeContent(markdown)) {
+    if (
+      normalizeContent(content || note.content) === normalizeContent(markdown)
+    ) {
       return;
     }
 
@@ -240,7 +236,7 @@ const TextEditor = ({ note }: { note: Note }) => {
 
     event.preventDefault();
 
-    editor.removeBlocks([block.id])
+    editor.removeBlocks([block.id]);
   };
 
   return (
