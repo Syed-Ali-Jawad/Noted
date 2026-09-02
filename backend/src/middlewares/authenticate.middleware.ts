@@ -2,7 +2,6 @@ import "../types/express.d.ts";
 import type { Response, Request, NextFunction } from "express"
 import { AppError } from "../errors/AppError.js"
 import { verifyToken } from "../lib/jwt.js";
-import logger from "../lib/logger.js";
 
 const authenticate = (req: Request, _res: Response, next: NextFunction) => {
 
