@@ -74,7 +74,7 @@ const PageLayout = ({
           <div
             className={cn(
               "sticky z-10 top-0 w-full",
-              (isScrolled || isTrashPage) &&
+              isScrolled &&
               "bg-[url('/bg-pattern.svg')] bg-cover bg-gray-700/10 bg-blend-overlay shadow-md",
             )}
           >
@@ -96,7 +96,7 @@ const PageLayout = ({
           {isTrashPage && trashNotes?.length > 0 && (
             <button
               onClick={() => handleEmptyTrash()}
-              className="block sm:hidden  min-w-36 fixed bottom-4 right-4 font-semibold px-4 py-2 bg-primary text-white rounded-full shadow-[0_0_5px_5px_rgba(0,0,0,0.1)] flex justify-center "
+              className="sm:hidden  min-w-36 fixed bottom-4 right-4 font-semibold px-4 py-2 bg-primary text-white rounded-full shadow-[0_0_5px_5px_rgba(0,0,0,0.1)] flex justify-center "
             >
               {isMutating ? <Loader2 className="animate-spin text-white" /> : "Empty Trash"}
             </button>
