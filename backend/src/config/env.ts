@@ -10,8 +10,9 @@ type Env = {
   refreshSecret: string;
   jwtExpiresIn: NonNullable<SignOptions["expiresIn"]>;
   jwtRefreshExpiresIn: NonNullable<SignOptions["expiresIn"]>;
+  frontendUrl: string;
 };
-``
+``;
 export const env: Env = {
   dbUrl: process.env.DATABASE_URL!,
   port: process.env.PORT || "3000",
@@ -23,4 +24,5 @@ export const env: Env = {
   jwtRefreshExpiresIn: process.env.REFRESH_EXPIRES_IN! as NonNullable<
     SignOptions["expiresIn"]
   >,
+  frontendUrl: process.env.FRONTEND_URL!,
 };

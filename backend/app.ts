@@ -4,11 +4,16 @@ import { errorHandler } from "./src/middlewares/errorHandler.js";
 import notFound from "./src/middlewares/notFound.js";
 import cors from "cors";
 import appRouter from "./src/routes/app.routes.js";
+import { env } from "./src/config/env.js";
 
 export default function createApp() {
   const app = express();
 
-  app.use(cors());
+  app.use(
+    cors({
+      origin: env.frontendUrl,
+    }),
+  );
 
   app.use(express.json({ limit: "16kb" }));
   app.use(express.urlencoded({ extended: true }));
