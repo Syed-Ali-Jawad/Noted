@@ -18,7 +18,7 @@ export const validate = (
       );
     }
 
-    req[source] = result.data;
+    req[source === "body" ? "body" : "params"] = result.data;
     next();
   };
 };

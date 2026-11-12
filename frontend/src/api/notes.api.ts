@@ -1,148 +1,150 @@
-
 import type { Note } from "@/types/notes.type";
 import api from "./client";
 import type { NoteType } from "@/types/enums";
 
-export const getNotes = async (search?: string) => {
-    try {
-        const params = new URLSearchParams();
+export const NOTES_PAGE_SIZE = "15";
 
-        if (search?.trim()) {
-            params.set("search", search.trim());
-        }
+export type NotesPage = {
+  notes: Note[];
+  totalNotes: number;
+};
 
-        const { data } = await api.get(`/notes${search ? `?search=${search}` : ""}`)
-        return data.notes
-    } catch (error) {
-        throw error
-    }
-}
+export const getNotes = async (search?: string, page: number = 1) => {
+  try {
+    const params = new URLSearchParams({
+      ...(search?.trim() && { search: search.trim() }),
+      page: page.toString(),
+      pageSize: NOTES_PAGE_SIZE,
+    });
+
+    const { data } = await api.get(`/notes?${params.toString()}`);
+    return { notes: data.notes, totalNotes: data.totalNotes };
+  } catch (error) {
+    throw error;
+  }
+};
 
 export const getPinnedNotes = async (search?: string) => {
-    try {
-        const params = new URLSearchParams();
+  try {
+    const params = new URLSearchParams({
+      ...(search?.trim() && { search: search.trim() }),
+      page: "1",
+      pageSize: "15",
+    });
 
-        if (search?.trim()) {
-            params.set("search", search.trim());
-        }
+    const { data } = await api.get(`/notes/pinned?${params.toString()}`);
 
-        const { data } = await api.get(`/notes/pinned${search ? `?search=${search}` : ""}`)
+    return data.notes;
+  } catch (err) {
+    throw err;
+  }
+};
 
-        return data.notes
-    }
-    catch (err) {
-        throw err
-    }
-}
+export const getArchivedNotes = async (search?: string, page: number = 1) => {
+  try {
+    const params = new URLSearchParams({
+      ...(search?.trim() && { search: search.trim() }),
+      page: page.toString(),
+      pageSize: NOTES_PAGE_SIZE,
+    });
 
-export const getArchivedNotes = async (search?: string) => {
-    try {
-        const params = new URLSearchParams();
+    const { data } = await api.get(`/notes/archived?${params.toString()}`);
 
-        if (search?.trim()) {
-            params.set("search", search.trim());
-        }
+    return { notes: data.notes, totalNotes: data.totalNotes };
+  } catch (err) {
+    throw err;
+  }
+};
 
-        const { data } = await api.get(`/notes/archived${search ? `?search=${search}` : ""}`)
+export const getTrashedNotes = async (search?: string, page: number = 1) => {
+  try {
+    const params = new URLSearchParams({
+      ...(search?.trim() && { search: search.trim() }),
+      page: page.toString(),
+      pageSize: NOTES_PAGE_SIZE,
+    });
 
-        return data.notes
-    }
-    catch (err) {
-        throw err
-    }
-}
+    const { data } = await api.get(`/notes/trashed?${params.toString()}`);
 
-export const getTrashedNotes = async (search?: string) => {
-    try {
-        const params = new URLSearchParams();
-
-        if (search?.trim()) {
-            params.set("search", search.trim());
-        }
-
-        const { data } = await api.get(`/notes/trashed${search ? `?search=${search}` : ""}`)
-
-        return data.notes
-    }
-    catch (err) {
-        throw err
-    }
-}
+    return { notes: data.notes, totalNotes: data.totalNotes };
+  } catch (err) {
+    throw err;
+  }
+};
 
 export const getNote = async (id: string) => {
-    try {
-        const { data } = await api.get(`/notes/${id}`)
+  try {
+    const { data } = await api.get(`/notes/${id}`);
 
-        return data.note
-    }
-    catch (err) {
-        throw err
-    }
-}
+    return data.note;
+  } catch (err) {
+    throw err;
+  }
+};
 
 export const deleteSingleNote = async (id: string) => {
-    try {
-        await api.delete(`/notes/${id}`)
-    }
-    catch (err) {
-        throw err
-    }
-}
+  try {
+    await api.delete(`/notes/${id}`);
+  } catch (err) {
+    throw err;
+  }
+};
 
 export const deleteNotes = async ({ arg }: { arg: string[] }) => {
-    try {
-        await api.delete(`/notes`, {
-            data: { ids: arg }
-        })
-    }
-    catch (err) {
-        throw err
-    }
-}
+  try {
+    await api.delete(`/notes`, {
+      data: { ids: arg },
+    });
+  } catch (err) {
+    throw err;
+  }
+};
 
 type UpdateNoteArgs = {
-    id: string;
-    updates: Partial<Note>;
+  id: string;
+  updates: Partial<Note>;
 };
 
 export const updateSingleNote = async (
-    _url: string,
-    { arg }: { arg: UpdateNoteArgs }
+  _url: string,
+  { arg }: { arg: UpdateNoteArgs },
 ) => {
-    try {
-        const { data } = await api.patch(`/notes/${arg.id}`, arg.updates);
-        return data;
-    }
-    catch (error) {
-        throw error
-    }
-}
+  try {
+    const { data } = await api.patch(`/notes/${arg.id}`, arg.updates);
+    return data;
+  } catch (error) {
+    throw error;
+  }
+};
 
-export const updateNotes = async (_url: string, { arg }: { arg: { ids: string[], updates: Partial<Note> } }) => {
-    try {
-        const { data } = await api.patch("/notes", { ids: arg.ids, ...arg.updates });
-        return data;
-    }
-    catch (error) {
-        throw error
-    }
-}
+export const updateNotes = async (
+  _url: string,
+  { arg }: { arg: { ids: string[]; updates: Partial<Note> } },
+) => {
+  try {
+    const { data } = await api.patch("/notes", {
+      ids: arg.ids,
+      ...arg.updates,
+    });
+    return data;
+  } catch (error) {
+    throw error;
+  }
+};
 
 export const createNote = async (type: NoteType) => {
-    try {
-        const { data } = await api.post("/notes", { type })
-        return data.note
-    }
-    catch (error) {
-        throw error
-    }
-}
+  try {
+    const { data } = await api.post("/notes", { type });
+    return data.note;
+  } catch (error) {
+    throw error;
+  }
+};
 
 export const emptyTrash = async () => {
-    try {
-        await api.delete("/notes/trash")
-    }
-    catch (error) {
-        throw error
-    }
-}
+  try {
+    await api.delete("/notes/trash");
+  } catch (error) {
+    throw error;
+  }
+};

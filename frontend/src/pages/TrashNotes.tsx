@@ -1,19 +1,18 @@
 import NotesView from "@/components/NotesView";
 import useNotesStore from "@/store";
 import { getTrashedNotes } from "@/api/notes.api";
-import useSWR from "swr";
 import { Loader2 } from "lucide-react";
 import EmptyState from "@/components/EmptyState";
+import useNotesInfinite from "@/hooks/useSWRInfinite";
 
 const TrashNotes = () => {
   const { search } = useNotesStore();
   const {
-    data: notes = [],
+    data = { notes: [], totalNotes: 0 },
     isLoading,
     error,
-  } = useSWR(["/notes/trashed", search], ([, search]) =>
-    getTrashedNotes(search),
-  );
+    loadMoreNotes,
+  } = useNotesInfinite(["/notes/trashed", search], getTrashedNotes);
 
   if (error) {
     throw error;
@@ -24,8 +23,8 @@ const TrashNotes = () => {
       <h1 className="text-4xl font-bold">Trash</h1>
       {isLoading ? (
         <Loader2 className="animate-spin mx-auto size-28 aspect-square text-gray-400 stroke-1" />
-      ) : notes.length ? (
-        <NotesView notes={notes} />
+      ) : data.notes.length ? (
+        <NotesView notes={data.notes} loadMore={loadMoreNotes} />
       ) : (
         <EmptyState description="No notes in trash" />
       )}

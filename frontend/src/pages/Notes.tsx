@@ -15,6 +15,7 @@ import { NOTE_TYPE_OPTIONS } from "@/shared/constants/text-editor.constant";
 import { createNote, getNotes, getPinnedNotes } from "@/api/notes.api";
 import useSWR from "swr";
 import EmptyState from "@/components/EmptyState";
+import useNotesInfinite from "@/hooks/useSWRInfinite";
 
 const Notes = () => {
   const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
@@ -27,10 +28,11 @@ const Notes = () => {
     error: pinnedNotesError,
   } = useSWR(["/notes/pinned", search], ([, search]) => getPinnedNotes(search));
   const {
-    data: notes = [],
+    data = { notes: [], totalNotes: 0 },
     isLoading,
     error,
-  } = useSWR(["/notes", search], ([, search]) => getNotes(search));
+    loadMoreNotes,
+  } = useNotesInfinite(["/notes", search], getNotes);
 
   const handleAddNote = async (type: NoteType) => {
     const note = await createNote(type);
@@ -65,12 +67,18 @@ const Notes = () => {
 
         <div className="flex flex-col gap-y-10">
           {pinnedNotes.length > 0 && <NotesView notes={pinnedNotes} />}
-          {notes.length > 0 && <NotesView notes={notes} title="other notes" />}
+          {data.notes.length > 0 && (
+            <NotesView
+              notes={data.notes}
+              title="other notes"
+              loadMore={loadMoreNotes}
+            />
+          )}
           {(isLoading || isPinnedLoading) && (
             <Loader2 className="animate-spin mx-auto size-28 aspect-square text-gray-400 stroke-1" />
           )}
-          {notes?.length === 0 &&
-            pinnedNotes?.length === 0 &&
+          {data.notes.length === 0 &&
+            pinnedNotes.length === 0 &&
             !(isLoading || isPinnedLoading) && (
               <EmptyState description="Add, unarchive or restore notes from trash to view." />
             )}

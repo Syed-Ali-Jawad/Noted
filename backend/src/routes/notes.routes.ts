@@ -16,6 +16,8 @@ import {
 import {
   createNoteSchema,
   deleteNotesSchema,
+  paramsIdSchema,
+  paramsQuerySchema,
   updateNotesSchema,
   updateSingleNote,
 } from "../validators/notes.validator.js";
@@ -27,13 +29,21 @@ noteRouter.use(authenticate);
 
 noteRouter.post("/", validate(createNoteSchema), createNote);
 
-noteRouter.get("/archived", getArchivedNotes);
+noteRouter.get(
+  "/archived",
+  validate(paramsQuerySchema, "query"),
+  getArchivedNotes,
+);
 
-noteRouter.get("/trashed", getTrashedNotes);
+noteRouter.get(
+  "/trashed",
+  validate(paramsQuerySchema, "query"),
+  getTrashedNotes,
+);
 
-noteRouter.get("/pinned", getPinnedNotes);
+noteRouter.get("/pinned", validate(paramsQuerySchema, "query"), getPinnedNotes);
 
-noteRouter.get("/", getNotes);
+noteRouter.get("/", validate(paramsQuerySchema, "query"), getNotes);
 
 noteRouter.delete("/", validate(deleteNotesSchema), deleteNotes);
 
@@ -43,8 +53,8 @@ noteRouter.patch("/", validate(updateNotesSchema), updateNotes);
 
 noteRouter.patch("/:id", validate(updateSingleNote), updateNoteById);
 
-noteRouter.get("/:id", getNoteById);
+noteRouter.get("/:id", validate(paramsIdSchema, "params"), getNoteById);
 
-noteRouter.delete("/:id", deleteNoteById);
+noteRouter.delete("/:id", validate(paramsIdSchema, "params"), deleteNoteById);
 
 export default noteRouter;

@@ -1,19 +1,18 @@
 import NotesView from "@/components/NotesView";
 import useNotesStore from "@/store";
 import { getArchivedNotes } from "@/api/notes.api";
-import useSWR from "swr";
 import { Loader2 } from "lucide-react";
 import EmptyState from "@/components/EmptyState";
+import useNotesInfinite from "@/hooks/useSWRInfinite";
 
 const ArchiveNotes = () => {
   const { search } = useNotesStore();
   const {
-    data: notes = [],
+    data = { notes: [], totalNotes: 0 },
     isLoading,
     error,
-  } = useSWR(["/notes/archived", search], ([, search]) =>
-    getArchivedNotes(search),
-  );
+    loadMoreNotes,
+  } = useNotesInfinite(["/notes/archived", search], getArchivedNotes);
 
   if (error) {
     throw error;
@@ -26,8 +25,8 @@ const ArchiveNotes = () => {
 
         {isLoading ? (
           <Loader2 className="animate-spin mx-auto size-28 aspect-square text-gray-400 stroke-1" />
-        ) : notes.length > 0 ? (
-          <NotesView notes={notes} />
+        ) : data.notes.length > 0 ? (
+          <NotesView notes={data.notes} loadMore={loadMoreNotes} />
         ) : (
           <EmptyState description="No notes in archive" />
         )}

@@ -1,7 +1,7 @@
 import type { Block } from "@blocknote/core";
 import type { NoteType } from "./enums";
 
-export type Note = {
+type Note = {
   id: string;
   type: NoteType;
   title: string;
@@ -12,13 +12,15 @@ export type Note = {
   archivedAt: string | null;
   isArchived: boolean;
   isPinned: boolean;
-  isTrashed: boolean
+  isTrashed: boolean;
 };
 
-export type CheckListBlock = Block & {
+type CheckListBlock = Block & {
   type: "checkListItem";
   content: string | { text: string }[];
   props: { checked: boolean };
 };
 
-export type NoteColor = "BLUE" | "GREEN" | "YELLOW" | "WHITE" | "PURPLE";
+type NoteColor = "BLUE" | "GREEN" | "YELLOW" | "WHITE" | "PURPLE";
+
+export type { Note, CheckListBlock, NoteColor };

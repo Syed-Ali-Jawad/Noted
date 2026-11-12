@@ -1,264 +1,384 @@
-import { AppError } from "../errors/AppError.js"
-import type { NoteType } from "../generated/prisma/enums.js"
-import { Prisma } from "../generated/prisma/client.js"
-import { prisma } from "../lib/prisma.js"
-import { validateNoteId } from "../lib/utils.js"
-import type { NoteUpdate } from "../types/note.type.js"
-
+import { AppError } from "../errors/AppError.js";
+import type { NoteType } from "../generated/prisma/enums.js";
+import { Prisma } from "../generated/prisma/client.js";
+import { prisma } from "../lib/prisma.js";
+import { validateNoteId } from "../lib/utils.js";
+import type { NoteUpdate } from "../types/note.type.js";
 
 export const addANote = async (userId: string, type: NoteType) => {
-    if (!userId) throw new AppError(400, "User id is required");
-    const note = await prisma.note.create({
-        data: {
-            userId,
-            type,
-            trashedAt: null
-        },
-        select: {
-            id: true,
-            content: true,
-            title: true,
-            isArchived: true,
-            isPinned: true,
-            isTrashed: true,
-            color: true,
-            type: true
+  if (!userId) throw new AppError(400, "User id is required");
+  const note = await prisma.note.create({
+    data: {
+      userId,
+      type,
+      trashedAt: null,
+    },
+    select: {
+      id: true,
+      content: true,
+      title: true,
+      isArchived: true,
+      isPinned: true,
+      isTrashed: true,
+      color: true,
+      type: true,
+    },
+  });
 
-        }
-    })
+  return note;
+};
 
-    return note
-}
+export const dbUpdateNoteById = async (
+  id: string,
+  userId: string,
+  requestBody: NoteUpdate,
+) => {
+  validateNoteId(id);
 
+  const updatedNote = await prisma.note.update({
+    where: {
+      id,
+      userId,
+    },
+    data: {
+      ...requestBody,
+    },
+    select: {
+      id: true,
+      content: true,
+      title: true,
+      isArchived: true,
+      isPinned: true,
+      isTrashed: true,
+      color: true,
+      type: true,
+    },
+  });
 
-export const dbUpdateNoteById = async (id: string, userId: string, requestBody: NoteUpdate) => {
-
-    validateNoteId(id)
-
-    const updatedNote = await prisma.note.update({
-        where: {
-            id,
-            userId
-        },
-        data: {
-            ...requestBody
-        },
-        select: {
-            id: true,
-            content: true,
-            title: true,
-            isArchived: true,
-            isPinned: true,
-            isTrashed: true,
-            color: true,
-            type: true,
-        }
-    })
-
-    return updatedNote
-}
+  return updatedNote;
+};
 
 export const dbGetNoteById = async (id: string, userId: string) => {
-    validateNoteId(id)
-    const note = await prisma.note.findUnique({
-        where: {
-            id,
-            userId
-        }
-    })
+  validateNoteId(id);
+  const note = await prisma.note.findUnique({
+    where: {
+      id,
+      userId,
+    },
+  });
 
-    if (!note) throw new AppError(404, "Note not found");
+  if (!note) throw new AppError(404, "Note not found");
 
-    return note
-}
+  return note;
+};
 
 export const dbDeleteNoteById = async (id: string, userId: string) => {
-    validateNoteId(id)
+  validateNoteId(id);
 
-    await prisma.note.deleteMany({
-        where: {
-            id,
-            userId
-        }
-    })
+  await prisma.note.deleteMany({
+    where: {
+      id,
+      userId,
+    },
+  });
 
-    return
-}
-
+  return;
+};
 
 export const dbDeleteNotes = async (ids: string[], userId: string) => {
-    if (!ids || ids.length === 0) throw new AppError(400, "Note ids to delete are required");
+  if (!ids || ids.length === 0)
+    throw new AppError(400, "Note ids to delete are required");
 
-    await prisma.note.deleteMany({
-        where: {
-            userId,
-            id: {
-                in: ids
-            }
-        }
-    });
+  await prisma.note.deleteMany({
+    where: {
+      userId,
+      id: {
+        in: ids,
+      },
+    },
+  });
 
-    return;
+  return;
+};
 
-}
+export const dbUpdateNotes = async (
+  ids: string[],
+  userId: string,
+  isArchived: boolean,
+  isPinned: boolean,
+  isTrashed: boolean,
+) => {
+  const notes = await prisma.note.updateManyAndReturn({
+    where: {
+      id: {
+        in: ids,
+      },
+      userId,
+    },
+    data: {
+      isArchived,
+      isPinned,
+      isTrashed,
+    },
+    select: {
+      id: true,
+      isArchived: true,
+      isPinned: true,
+      isTrashed: true,
+      color: true,
+      title: true,
+      content: true,
+      type: true,
+    },
+  });
 
-export const dbUpdateNotes = async (ids: string[], userId: string, isArchived: boolean, isPinned: boolean, isTrashed: boolean) => {
-    const notes = await prisma.note.updateManyAndReturn({
-        where: {
-            id: {
-                in: ids
+  return notes;
+};
+
+export const dbGetNote = async (
+  userId: string,
+  page: number = 1,
+  pageSize: number = 10,
+  search?: string,
+) => {
+  if (!userId) throw new AppError(400, "User id is required");
+  const where = {
+    userId,
+    isPinned: false,
+    isArchived: false,
+    isTrashed: false,
+    AND: [
+      {
+        OR: [{ title: { not: "" } }, { content: { not: "" } }],
+      },
+      ...(search
+        ? [
+            {
+              OR: [
+                {
+                  title: {
+                    contains: search,
+                    mode: Prisma.QueryMode.insensitive,
+                  },
+                },
+                {
+                  content: {
+                    contains: search,
+                    mode: Prisma.QueryMode.insensitive,
+                  },
+                },
+              ],
             },
-            userId
-        },
-        data: {
-            isArchived,
-            isPinned,
-            isTrashed
-        },
-        select: {
-            id: true,
-            isArchived: true,
-            isPinned: true,
-            isTrashed: true,
-            color: true,
-            title: true,
-            content: true,
-            type: true
-        }
-    })
+          ]
+        : []),
+    ],
+  };
 
-    return notes
-}
+  const [notes, totalNotes] = await Promise.all([
+    prisma.note.findMany({
+      where,
+      orderBy: {
+        updatedAt: "desc",
+      },
+      select: {
+        id: true,
+        title: true,
+        content: true,
+        isArchived: true,
+        isPinned: true,
+        isTrashed: true,
+        color: true,
+        type: true,
+      },
+      skip: (page - 1) * pageSize,
+      take: pageSize,
+    }),
 
-export const dbGetNote = async (userId: string, search?: string) => {
-    if (!userId) throw new AppError(400, "User id is required");
-    const notes = await prisma.note.findMany({
-        where: {
-            userId,
-            isPinned: false,
-            isArchived: false,
-            isTrashed: false,
-            AND: [
-                { OR: [{ title: { not: "" } }, { content: { not: "" } }] },
-                ...(search ? [{ OR: [{ title: { contains: search, mode: Prisma.QueryMode.insensitive } }, { content: { contains: search, mode: Prisma.QueryMode.insensitive } }] }] : [])
+    prisma.note.count({
+      where,
+    }),
+  ]);
+
+  return { notes, totalNotes };
+};
+
+export const dbGetNoteByArchived = async (
+  userId: string,
+  page: number = 1,
+  pageSize: number = 10,
+  search?: string,
+) => {
+  if (!userId) throw new AppError(400, "User id is required");
+
+  const where = {
+    isArchived: true,
+    isTrashed: false,
+    userId,
+    AND: [
+      { OR: [{ title: { not: "" } }, { content: { not: "" } }] },
+      ...(search
+        ? [
+            {
+              OR: [
+                {
+                  title: {
+                    contains: search,
+                    mode: Prisma.QueryMode.insensitive,
+                  },
+                },
+                {
+                  content: {
+                    contains: search,
+                    mode: Prisma.QueryMode.insensitive,
+                  },
+                },
+              ],
+            },
+          ]
+        : []),
+    ],
+  };
+
+  const [notes, totalNotes] = await Promise.all([
+    await prisma.note.findMany({
+      where,
+      orderBy: {
+        updatedAt: "desc",
+      },
+      select: {
+        id: true,
+        title: true,
+        content: true,
+        isArchived: true,
+        isPinned: true,
+        isTrashed: true,
+        color: true,
+        type: true,
+      },
+      skip: (page - 1) * pageSize,
+      take: pageSize,
+    }),
+
+    prisma.note.count({
+      where,
+    }),
+  ]);
+
+  return { notes, totalNotes };
+};
+
+export const dbGetTrashedNotes = async (
+  userId: string,
+  page: number = 1,
+  pageSize: number = 10,
+  search?: string,
+) => {
+  if (!userId) throw new AppError(400, "User id is required");
+
+  const notes = await prisma.note.findMany({
+    where: {
+      userId,
+      isTrashed: true,
+      AND: [
+        { OR: [{ title: { not: "" } }, { content: { not: "" } }] },
+        ...(search
+          ? [
+              {
+                OR: [
+                  {
+                    title: {
+                      contains: search,
+                      mode: Prisma.QueryMode.insensitive,
+                    },
+                  },
+                  {
+                    content: {
+                      contains: search,
+                      mode: Prisma.QueryMode.insensitive,
+                    },
+                  },
+                ],
+              },
             ]
-        },
-        orderBy: {
-            updatedAt: "desc",
-        },
-        select: {
-            id: true,
-            title: true,
-            content: true,
-            isArchived: true,
-            isPinned: true,
-            isTrashed: true,
-            color: true,
-            type: true
-        }
-    })
+          : []),
+      ],
+    },
+    orderBy: {
+      updatedAt: "desc",
+    },
 
-    return notes
-}
+    select: {
+      id: true,
+      title: true,
+      content: true,
+      isArchived: true,
+      isPinned: true,
+      isTrashed: true,
+      color: true,
+      type: true,
+    },
+    skip: (page - 1) * pageSize,
+    take: pageSize,
+  });
 
-export const dbGetNoteByArchived = async (userId: string, search?: string) => {
-
-    if (!userId) throw new AppError(400, "User id is required");
-
-    const notes = await prisma.note.findMany({
-        where: {
-            isArchived: true,
-            isTrashed: false,
-            userId,
-            AND: [
-                { OR: [{ title: { not: "" } }, { content: { not: "" } }] },
-                ...(search ? [{ OR: [{ title: { contains: search, mode: Prisma.QueryMode.insensitive } }, { content: { contains: search, mode: Prisma.QueryMode.insensitive } }] }] : [])
-            ]
-        },
-        orderBy: {
-            updatedAt: "desc",
-        },
-        select: {
-            id: true,
-            title: true,
-            content: true,
-            isArchived: true,
-            isPinned: true,
-            isTrashed: true,
-            color: true,
-            type: true
-        }
-    })
-
-    return notes
-}
-
-export const dbGetTrashedNotes = async (userId: string, search?: string) => {
-    if (!userId) throw new AppError(400, "User id is required");
-
-    const notes = await prisma.note.findMany({
-        where: {
-            userId,
-            isTrashed: true,
-            AND: [
-                { OR: [{ title: { not: "" } }, { content: { not: "" } }] },
-                ...(search ? [{ OR: [{ title: { contains: search, mode: Prisma.QueryMode.insensitive } }, { content: { contains: search, mode: Prisma.QueryMode.insensitive } }] }] : [])
-            ]
-        },
-        orderBy: {
-            updatedAt: "desc",
-        },
-        select: {
-            id: true,
-            title: true,
-            content: true,
-            isArchived: true,
-            isPinned: true,
-            isTrashed: true,
-            color: true,
-            type: true
-        }
-    })
-
-    return notes
-}
+  return notes;
+};
 
 export const dbGetPinnedNotes = async (userId: string, search?: string) => {
-    if (!userId) throw new AppError(400, "User id is required");
-    const notes = await prisma.note.findMany({
-        where: {
-            userId,
-            isPinned: true,
-            isArchived: false,
-            isTrashed: false,
-            AND: [
-                { OR: [{ title: { not: "" } }, { content: { not: "" } }] },
-                ...(search ? [{ OR: [{ title: { contains: search, mode: Prisma.QueryMode.insensitive } }, { content: { contains: search, mode: Prisma.QueryMode.insensitive } }] }] : [])
+  if (!userId) throw new AppError(400, "User id is required");
+  const notes = await prisma.note.findMany({
+    where: {
+      userId,
+      isPinned: true,
+      isArchived: false,
+      isTrashed: false,
+      AND: [
+        { OR: [{ title: { not: "" } }, { content: { not: "" } }] },
+        ...(search
+          ? [
+              {
+                OR: [
+                  {
+                    title: {
+                      contains: search,
+                      mode: Prisma.QueryMode.insensitive,
+                    },
+                  },
+                  {
+                    content: {
+                      contains: search,
+                      mode: Prisma.QueryMode.insensitive,
+                    },
+                  },
+                ],
+              },
             ]
-        },
-        orderBy: {
-            updatedAt: "desc",
-        },
-        select: {
-            id: true,
-            title: true,
-            content: true,
-            isArchived: true,
-            isPinned: true,
-            isTrashed: true,
-            color: true,
-            type: true,
-        }
-    })
-    return notes;
-}
+          : []),
+      ],
+    },
+    orderBy: {
+      updatedAt: "desc",
+    },
+    select: {
+      id: true,
+      title: true,
+      content: true,
+      isArchived: true,
+      isPinned: true,
+      isTrashed: true,
+      color: true,
+      type: true,
+    },
+  });
+  return notes;
+};
 
 export const dbEmptyTrash = async (userId: string) => {
-    await prisma.note.deleteMany({
-        where: {
-            userId,
-            isTrashed: true
-        }
-    })
-    return;
-}
+  await prisma.note.deleteMany({
+    where: {
+      userId,
+      isTrashed: true,
+    },
+  });
+  return;
+};
