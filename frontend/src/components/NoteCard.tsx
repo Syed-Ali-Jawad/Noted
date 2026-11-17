@@ -9,6 +9,7 @@ import useNotesStore from "@/store";
 import type { Note, NoteColor } from "@/types/notes.type";
 import { Pin, } from "lucide-react";
 import { useLocation } from "react-router-dom";
+import { optimisticallyUpdateNotesPage } from "@/lib/notes-cache";
 
 import { BlockNoteView } from "@blocknote/mantine";
 import "./TextEditor/editor.css";
@@ -17,6 +18,7 @@ import useEditor from "@/hooks/useEditor";
 import { updateSingleNote } from "@/api/notes.api";
 import useSWRMutation from "swr/mutation";
 import ColorSelect from "./TextEditor/Toolbar/ColorSelect";
+import type { NotesCacheData } from "@/lib/notes-cache";
 
 const NoteCard = ({
   note,
@@ -37,18 +39,43 @@ const NoteCard = ({
   const isTrashPage = pathname === PAGE_ROUTES.trash;
   const isNotesPage = pathname === PAGE_ROUTES.notes;
 
-  const { trigger: updateNoteById } = useSWRMutation("/note/id", updateSingleNote, {
-    onSuccess: () => {
-      revalidate("/notes", "/notes/pinned", "/notes/archived", "/notes/trashed")
-    }
-  })
-
   const {
     selectedNotes,
     selectNote,
     unselectNote,
     mobileSelectAllow,
+    search,
   } = useNotesStore();
+
+  const cachePath =
+    pathname === PAGE_ROUTES.trash
+      ? "/notes/trashed"
+      : pathname === PAGE_ROUTES.archive
+        ? "/notes/archived"
+        : note.isPinned
+          ? "/notes/pinned"
+          : "/notes";
+  const cacheKey: [string, string] = [cachePath, search];
+  const { trigger: updateNoteById } = useSWRMutation<
+    unknown,
+    Error,
+    [string, string],
+    { id: string; updates: Partial<Note> },
+    NotesCacheData
+  >(
+    cacheKey,
+    (_key, { arg }) => updateSingleNote("", { arg }),
+    {
+      onSuccess: () =>
+        revalidate("/notes", "/notes/pinned", "/notes/archived", "/notes/trashed"),
+    },
+  );
+  const optimisticOptions = (updates: Partial<Note>) => ({
+    optimisticData: (currentData: Parameters<typeof optimisticallyUpdateNotesPage>[0]) =>
+      optimisticallyUpdateNotesPage(currentData, cachePath, search, [note.id], updates),
+    rollbackOnError: true,
+    revalidate: false,
+  });
 
   const handleSelect = (checked: boolean, note: Note) => {
     if (checked) {
@@ -64,13 +91,14 @@ const NoteCard = ({
   };
 
   const handleColorChange = (color: NoteColor) => {
-    updateNoteById({ id: note.id, updates: { color } });
+    updateNoteById({ id: note.id, updates: { color } }, optimisticOptions({ color }));
   };
 
 
 
   const handlePinUnpin = () => {
-    updateNoteById({ id: note.id, updates: { isPinned: !note.isPinned } });
+    const updates = { isPinned: !note.isPinned };
+    updateNoteById({ id: note.id, updates }, optimisticOptions(updates));
   };
 
   return (

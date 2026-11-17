@@ -119,21 +119,21 @@ export const getArchivedNotes = async (req: Request, res: Response) => {
     search as string | undefined,
   );
 
-  return res.status(200).json({ success: true, notes });
+  return res.status(200).json({ success: true, notes, totalNotes });
 };
 
 export const getTrashedNotes = async (req: Request, res: Response) => {
   const userId = req.userId as string;
   const { search, page, pageSize } = req.query;
 
-  const notes = await dbGetTrashedNotes(
+  const { notes, totalNotes } = await dbGetTrashedNotes(
     userId,
     parseInt(page as string) || 1,
     parseInt(pageSize as string) || 10,
     search as string | undefined,
   );
 
-  return res.status(200).json({ success: true, notes });
+  return res.status(200).json({ success: true, notes, totalNotes });
 };
 
 export const getPinnedNotes = async (req: Request, res: Response) => {

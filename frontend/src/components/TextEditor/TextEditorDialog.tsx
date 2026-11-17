@@ -3,12 +3,17 @@ import { useEffect, useState } from "react";
 import TextEditor from "./TextEditor";
 import { PAGE_ROUTES } from "@/shared/constants/constants";
 import { Pin, X } from "lucide-react";
-import { cn, revalidate } from "@/lib/utils";
+import { cn, revalidate, toast } from "@/lib/utils";
 import NoteActions from "../NoteActions";
 import { useLocation } from "react-router-dom";
 import type { Note } from "@/types/notes.type";
 import useSWRMutation from "swr/mutation";
 import { updateSingleNote } from "@/api/notes.api";
+import useNotesStore from "@/store";
+import {
+  optimisticallyUpdateNotesPage,
+  type NotesCacheData,
+} from "@/lib/notes-cache";
 
 
 interface TextEditorDialog {
@@ -21,12 +26,30 @@ const TextEditorDialog = ({
   onOpenChange,
 }: TextEditorDialog) => {
   const { pathname } = useLocation();
+  const { search } = useNotesStore();
   const [isPinned, setIsPinned] = useState<boolean>(note.isPinned)
-  const { trigger: pinUnpinNote } = useSWRMutation("/note/id", updateSingleNote, {
-    onSuccess: () => {
-      revalidate("/notes/id", "/notes", "/notes/pinned")
-    }
-  })
+  const cachePath =
+    pathname === PAGE_ROUTES.notes && note.isPinned
+      ? "/notes/pinned"
+      : pathname === PAGE_ROUTES.trash
+        ? "/notes/trashed"
+        : pathname === PAGE_ROUTES.archive
+          ? "/notes/archived"
+          : "/notes";
+  const { trigger: pinUnpinNote } = useSWRMutation<
+    unknown,
+    Error,
+    [string, string],
+    { id: string; updates: Partial<Note> },
+    NotesCacheData
+  >(
+    [cachePath, search],
+    (_key, { arg }) => updateSingleNote("", { arg }),
+    {
+      onSuccess: () =>
+        revalidate("/notes", "/notes/pinned", "/notes/archived", "/notes/trashed"),
+    },
+  );
 
   const handleOpenChange = (val: boolean) => {
     onOpenChange(val);
@@ -70,15 +93,28 @@ const TextEditorDialog = ({
   };
 
   const handlePinUnpinNote = async () => {
-
     const newValue = !isPinned
-    await pinUnpinNote({
-      id: note.id, updates: {
-        isPinned: newValue
-      }
-    })
-
     setIsPinned(newValue)
+    try {
+      await pinUnpinNote(
+        { id: note.id, updates: { isPinned: newValue } },
+        {
+          optimisticData: (currentData: NotesCacheData | undefined) =>
+            optimisticallyUpdateNotesPage(
+              currentData,
+              cachePath,
+              search,
+              [note.id],
+              { isPinned: newValue },
+            ),
+          rollbackOnError: true,
+          revalidate: false,
+        },
+      );
+    } catch {
+      setIsPinned(!newValue);
+      toast({ message: "Could not update note.", type: "destructive" });
+    }
   }
 
   return (

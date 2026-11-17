@@ -8,6 +8,10 @@ import { Archive, ArchiveRestore, Loader2, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { useLocation } from "react-router-dom";
 import useSWRMutation from "swr/mutation";
+import {
+  optimisticallyUpdateNotesPage,
+  type NotesCacheData,
+} from "@/lib/notes-cache";
 
 interface NoteActionsProps {
   showLabels?: boolean;
@@ -25,25 +29,85 @@ const NoteActions = ({
   const { pathname } = useLocation();
   const {
     selectedNotes,
-    resetNotesSelection
+    resetNotesSelection,
+    search,
   } = useNotesStore();
 
   const isArchivePage = pathname === PAGE_ROUTES.archive;
   const isTrashPage = pathname === PAGE_ROUTES.trash;
+  const pagePath =
+    isTrashPage ? "/notes/trashed" : isArchivePage ? "/notes/archived" : "/notes";
+  const cachePath =
+    note && pagePath === "/notes" && note.isPinned
+      ? "/notes/pinned"
+      : pagePath;
+  const cacheKey: [string, string] = [cachePath, search];
 
   const [bulkApiRunning, setBulkApiRunning] = useState<string>()
 
 
-  const { trigger: updateNoteById } = useSWRMutation("/note/id", updateSingleNote, {
-    onSuccess: () => revalidate("/notes", "/notes/pinned", "/notes/archived", "/notes/trashed")
-  })
+  const { trigger: updateNoteById } = useSWRMutation<
+    unknown,
+    Error,
+    [string, string],
+    { id: string; updates: Partial<Note> },
+    NotesCacheData
+  >(
+    cacheKey,
+    (_key, { arg }) => updateSingleNote("", { arg }),
+    {
+      onSuccess: () => revalidate("/notes", "/notes/pinned", "/notes/archived", "/notes/trashed"),
+    },
+  );
+  const { trigger: updateNotesBulk } = useSWRMutation<
+    unknown,
+    Error,
+    [string, string],
+    { ids: string[]; updates: Partial<Note> },
+    NotesCacheData
+  >(
+    cacheKey,
+    (_key, { arg }) => updateNotes("", { arg }),
+    {
+      onSuccess: async () => {
+        await revalidate("/notes", "/notes/pinned", "/notes/archived", "/notes/trashed");
+        resetNotesSelection()
+        setBulkApiRunning("")
+      },
+    },
+  );
+  const { trigger: deleteNoteById } = useSWRMutation<
+    void,
+    Error,
+    [string, string],
+    string,
+    NotesCacheData
+  >(
+    cacheKey,
+    (_key, { arg }: { arg: string }) => deleteSingleNote(arg),
+    {
+      onSuccess: () => revalidate("/notes/trashed"),
+    },
+  );
+  const { trigger: deleteNotesBulk } = useSWRMutation<
+    void,
+    Error,
+    [string, string],
+    string[],
+    NotesCacheData
+  >(
+    cacheKey,
+    (_key, { arg }: { arg: string[] }) => deleteNotes({ arg }),
+    {
+      onSuccess: () => revalidate("/notes/trashed"),
+    },
+  );
 
-  const { trigger: updateNotesBulk } = useSWRMutation("/notes", updateNotes, {
-    onSuccess: async () => {
-      await revalidate("/notes", "/notes/pinned", "/notes/archived", "/notes/trashed");
-      resetNotesSelection()
-      setBulkApiRunning("")
-    }
+  const optimisticOptions = (ids: string[], updates: Partial<Note> = {}, remove = false) => ({
+    optimisticData: (currentData: Parameters<typeof optimisticallyUpdateNotesPage>[0]) =>
+      optimisticallyUpdateNotesPage(currentData, cachePath, search, ids, updates, remove),
+    rollbackOnError: true,
+    revalidate: false,
   })
 
   const showToast = (action: string) => {
@@ -62,40 +126,61 @@ const NoteActions = ({
   const handleDelete = async () => {
     if (isTrashPage) {
       if (note) {
-        await deleteSingleNote(note.id)
+        await deleteNoteById(note.id, optimisticOptions([note.id], {}, true))
       } else if (selectedNotes.length > 0) {
-        await deleteNotes({ arg: selectedNotes })
+        await deleteNotesBulk(selectedNotes, optimisticOptions(selectedNotes, {}, true))
       }
-      await revalidate("/notes/trashed")
       showToast("deleted permenantly");
       return;
     }
     if (note) {
-      await updateNoteById({ id: note.id, updates: { isTrashed: true } });
+      await updateNoteById(
+        { id: note.id, updates: { isTrashed: true } },
+        optimisticOptions([note.id], { isTrashed: true }),
+      );
     } else if (selectedNotes.length > 0) {
       setBulkApiRunning("move-to-trash")
-      await updateNotesBulk({ ids: selectedNotes, updates: { isTrashed: true } })
+      await updateNotesBulk(
+        { ids: selectedNotes, updates: { isTrashed: true } },
+        optimisticOptions(selectedNotes, { isTrashed: true }),
+      )
     }
     showToast("moved to trash");
   };
 
   const toggleArchive = async () => {
     if (note) {
-      await updateNoteById({ id: note.id, updates: { isArchived: !note.isArchived } });
+      const updates = { isArchived: !note.isArchived };
+      await updateNoteById(
+        { id: note.id, updates },
+        optimisticOptions([note.id], updates),
+      );
 
     } else if (selectedNotes.length > 0) {
       setBulkApiRunning("archive")
-      await updateNotesBulk({ ids: selectedNotes, updates: { isArchived: !isArchivePage } })
+      const updates = { isArchived: !isArchivePage };
+      await updateNotesBulk(
+        { ids: selectedNotes, updates },
+        optimisticOptions(selectedNotes, updates),
+      )
     }
     showToast(`${isArchivePage ? "Un" : ""}archived`);
   };
 
   const restoreTrash = async () => {
     if (note) {
-      await updateNoteById({ id: note.id, updates: { isTrashed: false, isArchived: false } });
+      const updates = { isTrashed: false, isArchived: false };
+      await updateNoteById(
+        { id: note.id, updates },
+        optimisticOptions([note.id], updates),
+      );
     } else if (selectedNotes.length > 0) {
       setBulkApiRunning("restore-trash")
-      await updateNotesBulk({ ids: selectedNotes, updates: { isTrashed: false, isArchived: false, isPinned: false } })
+      const updates = { isTrashed: false, isArchived: false, isPinned: false };
+      await updateNotesBulk(
+        { ids: selectedNotes, updates },
+        optimisticOptions(selectedNotes, updates),
+      )
     }
     showToast("restored");
   };

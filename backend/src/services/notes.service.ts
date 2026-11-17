@@ -275,53 +275,60 @@ export const dbGetTrashedNotes = async (
 ) => {
   if (!userId) throw new AppError(400, "User id is required");
 
-  const notes = await prisma.note.findMany({
-    where: {
-      userId,
-      isTrashed: true,
-      AND: [
-        { OR: [{ title: { not: "" } }, { content: { not: "" } }] },
-        ...(search
-          ? [
-              {
-                OR: [
-                  {
-                    title: {
-                      contains: search,
-                      mode: Prisma.QueryMode.insensitive,
-                    },
+  const where = {
+    userId,
+    isTrashed: true,
+    AND: [
+      { OR: [{ title: { not: "" } }, { content: { not: "" } }] },
+      ...(search
+        ? [
+            {
+              OR: [
+                {
+                  title: {
+                    contains: search,
+                    mode: Prisma.QueryMode.insensitive,
                   },
-                  {
-                    content: {
-                      contains: search,
-                      mode: Prisma.QueryMode.insensitive,
-                    },
+                },
+                {
+                  content: {
+                    contains: search,
+                    mode: Prisma.QueryMode.insensitive,
                   },
-                ],
-              },
-            ]
-          : []),
-      ],
-    },
-    orderBy: {
-      updatedAt: "desc",
-    },
+                },
+              ],
+            },
+          ]
+        : []),
+    ],
+  };
+  const [notes, totalNotes] = await Promise.all([
+    await prisma.note.findMany({
+      where,
+      orderBy: {
+        updatedAt: "desc",
+      },
 
-    select: {
-      id: true,
-      title: true,
-      content: true,
-      isArchived: true,
-      isPinned: true,
-      isTrashed: true,
-      color: true,
-      type: true,
-    },
-    skip: (page - 1) * pageSize,
-    take: pageSize,
-  });
+      select: {
+        id: true,
+        title: true,
+        content: true,
+        isArchived: true,
+        isPinned: true,
+        isTrashed: true,
+        color: true,
+        type: true,
+      },
+      skip: (page - 1) * pageSize,
+      take: pageSize,
+    }),
 
-  return notes;
+    prisma.note.count({
+      where,
+    }),
+  ]);
+
+  return { notes, totalNotes };
 };
 
 export const dbGetPinnedNotes = async (userId: string, search?: string) => {

@@ -6,8 +6,8 @@ import { Input } from "@/ui/input";
 import CustomToolbar from "./Toolbar/Toolbar";
 import { FormProvider, useForm } from "react-hook-form";
 import { NoteType } from "@/types/enums";
-import { cn, revalidate } from "@/lib/utils";
-import { NOTES_COLOR_CLASS_MAP } from "@/shared/constants/constants";
+import { cn, revalidate, toast } from "@/lib/utils";
+import { NOTES_COLOR_CLASS_MAP, PAGE_ROUTES } from "@/shared/constants/constants";
 import type { Note } from "@/types/notes.type";
 import { useEffect, useState } from "react";
 import { checkListToMarkdown, normalizeContent } from "./utils";
@@ -15,10 +15,26 @@ import useEditor from "@/hooks/useEditor";
 import useSWRMutation from "swr/mutation";
 import { updateSingleNote } from "@/api/notes.api";
 import { DEFAULT_VALUES_EDITOR } from "@/shared/constants/text-editor.constant";
+import useNotesStore from "@/store";
+import { useLocation } from "react-router-dom";
+import {
+  optimisticallyUpdateNotesPage,
+  type NotesCacheData,
+} from "@/lib/notes-cache";
 
 const TextEditor = ({ note }: { note: Note }) => {
   const [showSaving, setShowSaving] = useState<boolean>(false);
   const [imageUrl, setImageUrl] = useState<string | null>(null);
+  const { pathname } = useLocation();
+  const { search } = useNotesStore();
+  const cachePath =
+    pathname === PAGE_ROUTES.trash
+      ? "/notes/trashed"
+      : pathname === PAGE_ROUTES.archive
+        ? "/notes/archived"
+        : note.isPinned
+          ? "/notes/pinned"
+          : "/notes";
 
   const form = useForm<Note>({
     defaultValues: DEFAULT_VALUES_EDITOR,
@@ -32,9 +48,15 @@ const TextEditor = ({ note }: { note: Note }) => {
     formState: { isDirty },
   } = form;
 
-  const { trigger: updateNote, isMutating: isSaving } = useSWRMutation(
-    "/note/id",
-    updateSingleNote,
+  const { trigger: updateNote, isMutating: isSaving } = useSWRMutation<
+    unknown,
+    Error,
+    [string, string],
+    { id: string; updates: Partial<Note> },
+    NotesCacheData
+  >(
+    [cachePath, search],
+    (_key, { arg }) => updateSingleNote("", { arg }),
     {
       onSuccess: () => {
         revalidate(
@@ -44,6 +66,7 @@ const TextEditor = ({ note }: { note: Note }) => {
           "/notes/trashed",
         );
       },
+      onError: () => toast({ message: "Could not save note.", type: "destructive" }),
     },
   );
 
@@ -184,22 +207,37 @@ const TextEditor = ({ note }: { note: Note }) => {
     const timer = setTimeout(async () => {
       setShowSaving(true);
 
-      await updateNote({
-        id: note.id,
-        updates: {
+      const updates = {
           title,
           content,
           image,
           type,
           color,
-        },
-      });
+      };
 
-      setShowSaving(false);
+      try {
+        await updateNote(
+          { id: note.id, updates },
+          {
+            optimisticData: (currentData: NotesCacheData | undefined) =>
+              optimisticallyUpdateNotesPage(
+                currentData,
+                cachePath,
+                search,
+                [note.id],
+                updates,
+              ),
+            rollbackOnError: true,
+            revalidate: false,
+          },
+        );
+      } finally {
+        setShowSaving(false);
+      }
     }, 800);
 
     return () => clearTimeout(timer);
-  }, [title, color, content, image, type]);
+  }, [title, color, content, image, type, note.id, cachePath, search, updateNote]);
 
   const handleContentChange = () => {
     if (isSaving) return;

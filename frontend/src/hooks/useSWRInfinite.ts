@@ -16,15 +16,18 @@ const useNotesInfinite = (
     mutate,
   } = useSWR(key, () => fetcher(search));
 
+  useEffect(() => setPage(1), [search]);
+
   const loadMoreNotes = useCallback(async () => {
-    if (data.notes.length >= data.totalNotes) return;
+    if (data.notes.length >= data.totalNotes)
+      return;
 
     const updatedPage = page + 1;
 
-    const newNotes = await fetcher(search, updatedPage);
+    const newNotes = await fetcher(search, search ? 1 : updatedPage);
     mutate(
       {
-        notes: [...data.notes, ...newNotes.notes],
+        notes: [...(search ? [] : data.notes), ...newNotes.notes],
         totalNotes: newNotes.totalNotes,
       },
       false,
